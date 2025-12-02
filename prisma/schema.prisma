@@ -20,6 +20,12 @@ model UserAdmin {
   passwordHash String
 }
 
+model Position {
+  id  Int @id @default(autoincrement())
+  lat Int
+  lng Int
+}
+
 model Order {
   id          Int    @id @default(autoincrement())
   description String
