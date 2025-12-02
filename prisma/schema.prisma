@@ -29,7 +29,12 @@ model Position {
 
 model Order {
   id          Int    @id @default(autoincrement())
-  description String
+  description String @default("")
+  weight      String @default("")
+  size        String @default("")
+  volume      String @default("")
+  orderedAt   Int    @default(-1)
+  completedAt Int    @default(-1)
 }
 
 model UserCourier {
