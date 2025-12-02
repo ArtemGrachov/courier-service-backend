@@ -21,12 +21,24 @@ model UserAdmin {
 }
 
 model Position {
-  id  Int @id @default(autoincrement())
-  lat Int
-  lng Int
+  id           Int           @id @default(autoincrement())
+  lat          Int
+  lng          Int
+  userCouriers UserCourier[]
 }
 
 model Order {
   id          Int    @id @default(autoincrement())
   description String
+}
+
+model UserCourier {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  status       String   @default("offline")
+  name         String
+  phone        String
+  position     Position @relation(fields: [positionId], references: [id])
+  positionId   Int
 }
