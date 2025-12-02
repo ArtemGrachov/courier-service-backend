@@ -5,17 +5,22 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client"
-  output          = "../src/generated/prisma"
-  moduleFormat    = "cjs"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "sqlite"
 }
 
-model Order {
-  id           Int     @default(autoincrement()) @id
-  description  String
+model UserAdmin {
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  passwordHash String
 }
 
+model Order {
+  id          Int    @id @default(autoincrement())
+  description String
+}
