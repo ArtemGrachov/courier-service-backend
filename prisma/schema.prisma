@@ -42,3 +42,11 @@ model UserCourier {
   position     Position @relation(fields: [positionId], references: [id])
   positionId   Int
 }
+
+model UserClient {
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  passwordHash String
+  name         String
+  phone        String
+}
