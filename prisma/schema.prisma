@@ -35,6 +35,10 @@ model Order {
   volume      String @default("")
   orderedAt   Int    @default(-1)
   completedAt Int    @default(-1)
+  senderLat   Int    @default(0)
+  senderLng   Int    @default(0)
+  receiverLat Int    @default(0)
+  receiverLng Int    @default(0)
 }
 
 model UserCourier {
