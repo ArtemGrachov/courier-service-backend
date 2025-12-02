@@ -41,6 +41,8 @@ model Order {
   receiverLng  Int           @default(0)
   clientRates  ClientRate[]
   courierRates CourierRate[]
+  courier      UserCourier   @relation(fields: [courierId], references: [id])
+  courierId    Int           @default(-1)
 }
 
 model UserCourier {
@@ -54,6 +56,7 @@ model UserCourier {
   positionId   Int
   clientRates  ClientRate[]
   courierRates CourierRate[]
+  orders       Order[]
 }
 
 model UserClient {
