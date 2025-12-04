@@ -1,4 +1,5 @@
 const createAdminBootstrap = () => import('./scripts/create-admin/bootstrap.js').then(m => m.default.default);
+const updateAdminBootstrap = () => import('./scripts/update-admin/bootstrap.js').then(m => m.default.default);
 
 async function run() {
   const scriptName = process.argv[2];
@@ -7,6 +8,10 @@ async function run() {
   switch (scriptName) {
     case 'create-admin': {
       scriptLoader = createAdminBootstrap;
+      break;
+    }
+    case 'update-admin': {
+      scriptLoader = updateAdminBootstrap;
       break;
     }
   }
