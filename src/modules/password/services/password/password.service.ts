@@ -7,5 +7,9 @@ export class PasswordService {
     const passwordHash = await bcrypt.hash(password, 10);
     return passwordHash;
   }
+
+  public async comparePassword(password: string, hash: string) {
+    return await bcrypt.compare(password, hash);
+  }
 }
 

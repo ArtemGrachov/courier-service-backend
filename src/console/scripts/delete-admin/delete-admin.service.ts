@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { ParametersService } from 'src/console/modules/parameters/services/parameters/parameters.service';
-import { PrismaService } from '../../../prisma.service';
+import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 @Injectable()
 export class DeleteAdminService {

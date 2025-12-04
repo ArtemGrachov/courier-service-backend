@@ -3,13 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 
 import { ParametersModule } from 'src/console/modules/parameters/parameters.module';
 import { PasswordModule } from 'src/modules/password/password.module';
+import { PrismaModule } from 'src/modules/prisma/prisma.module';
 
 import { DeleteAdminService } from './delete-admin.service';
-import { PrismaService } from '../../../prisma.service';
 
 @Module({
-  imports: [ConfigModule.forRoot(), ParametersModule, PasswordModule],
-  providers: [PrismaService, DeleteAdminService]
+  imports: [ConfigModule.forRoot(), ParametersModule, PasswordModule, PrismaModule],
+  providers: [DeleteAdminService]
 })
 export class DeleteAdminModule {}
 
