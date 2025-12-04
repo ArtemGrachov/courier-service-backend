@@ -1,0 +1,5 @@
+export const ENV_VARS = {
+  DATABASE_URL: 'DATABASE_URL',
+  JWT_SECRET_KEY: 'JWT_SECRET_KEY',
+};
+
