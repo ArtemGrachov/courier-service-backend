@@ -1,5 +1,6 @@
 const createAdminBootstrap = () => import('./scripts/create-admin/bootstrap.js').then(m => m.default.default);
 const updateAdminBootstrap = () => import('./scripts/update-admin/bootstrap.js').then(m => m.default.default);
+const deleteAdminBootstrap = () => import('./scripts/delete-admin/bootstrap.js').then(m => m.default.default);
 
 async function run() {
   const scriptName = process.argv[2];
@@ -14,14 +15,20 @@ async function run() {
       scriptLoader = updateAdminBootstrap;
       break;
     }
+    case 'delete-admin': {
+      scriptLoader = deleteAdminBootstrap;
+      break;
+    }
   }
 
   if (!scriptLoader) {
     if (scriptName) {
-      throw new Error(`Incorrect script name ${scriptName}`);
+      console.error(`Incorrect script name ${scriptName}`);
+      return;
     }
 
-    throw new Error(`Script ${scriptName} not found`);
+    console.error(`Script ${scriptName} not found`);
+    return;
   }
 
   const script = await scriptLoader();
