@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
+import { ERoles } from 'src/constants/auth';
+
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { PasswordService } from 'src/modules/password/services/password/password.service';
 
@@ -34,7 +36,7 @@ export class LoginService {
     const token = await this.jwtService.signAsync({
       id: user.id,
       email: user.email,
-      role: 'admin',
+      role: ERoles.ADMIN,
       sessionUuid: user.sessionUuid,
     }, { expiresIn: '1h' });
 

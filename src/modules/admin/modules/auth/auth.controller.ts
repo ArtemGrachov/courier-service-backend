@@ -1,11 +1,9 @@
-import { Body, Controller, HttpCode, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 
 import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
 import { LoginService } from './services/login/login.service';
 import { ResetPasswordService } from './services/reset-password/reset-password.service';
 import { ChangePasswordService } from './services/change-password/change-password.service';
-
-import { AuthGuard } from './guards/auth/auth.guard';
 
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -45,7 +43,6 @@ export class AuthController {
     await this.resetPasswordService.resetPassword(token, password);
   }
 
-  @UseGuards(AuthGuard)
   @Post('change-password')
   @UsePipes(new ValidationPipe({ transform: true }))
   public async changePassword(@Body() { password, confirmPassword }: ChangePasswordDto) {
