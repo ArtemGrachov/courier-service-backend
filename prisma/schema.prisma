@@ -18,6 +18,7 @@ model UserAdmin {
   id           Int    @id @default(autoincrement())
   email        String @unique
   passwordHash String
+  sessionUuid  Int    @default(0)
 }
 
 model Position {
@@ -57,6 +58,7 @@ model UserCourier {
   clientRates  ClientRate[]
   courierRates CourierRate[]
   orders       Order[]
+  sessionUuid  Int           @default(0)
 }
 
 model UserClient {
@@ -67,6 +69,7 @@ model UserClient {
   phone        String
   clientRates  ClientRate[]
   courierRates CourierRate[]
+  sessionUuid  Int           @default(0)
 }
 
 model ClientRate {

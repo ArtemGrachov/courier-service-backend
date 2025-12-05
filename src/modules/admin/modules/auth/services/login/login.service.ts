@@ -36,8 +36,9 @@ export class LoginService {
 
     const jwtSecretKey = this.configService.get(ENV_VARS.JWT_SECRET_KEY) as string;
 
-    const token = jwt.sign({ id: user.id, email: user.email, role: 'admin' }, jwtSecretKey, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, email: user.email, role: 'admin', sessionUuid: user.sessionUuid }, jwtSecretKey, { expiresIn: '1h' });
 
     return { token };
   }
 }
+

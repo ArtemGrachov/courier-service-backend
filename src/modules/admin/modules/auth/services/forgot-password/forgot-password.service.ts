@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import crypto from 'crypto';
 import dayjs, { ManipulateType } from 'dayjs';
 
 import { ENV_VARS } from 'src/constants/env';
 import { MailService } from 'src/modules/mail/services/mail/mail.service';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
+import { TokenService } from 'src/modules/token/services/token/token.service';
 
 @Injectable()
 export class ForgotPasswordService {
@@ -18,6 +18,7 @@ export class ForgotPasswordService {
     private prismaService: PrismaService,
     private configService: ConfigService,
     private mailService: MailService,
+    private tokenService: TokenService,
   ) {}
 
   public async forgotPassword(email: string) {
@@ -31,9 +32,9 @@ export class ForgotPasswordService {
       return;
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-  
+    const resetToken = this.tokenService.createToken();
+    const hashedToken = this.tokenService.hashToken(resetToken);
+
     const expires = dayjs()
       .add(ForgotPasswordService.TOKEN_LIFETIME.VALUE, ForgotPasswordService.TOKEN_LIFETIME.UNITS as ManipulateType)
       .toDate()
@@ -54,3 +55,4 @@ export class ForgotPasswordService {
     await this.mailService.sendEmail(from, email, 'Password reset link', text);
   }
 }
+
