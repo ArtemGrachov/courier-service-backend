@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 
 import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
 import { LoginService } from './services/login/login.service';
@@ -14,6 +14,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @HttpCode(200)
   @UsePipes(new ValidationPipe({ transform: true }))
   public async login(@Body() { email, password }: LoginDto) {
     return this.loginService.login(email, password);
