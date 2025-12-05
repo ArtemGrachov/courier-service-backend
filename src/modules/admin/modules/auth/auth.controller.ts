@@ -13,7 +13,7 @@ export class AuthController {
     private forgotPasswordService: ForgotPasswordService,
   ) {}
 
-  @Post()
+  @Post('login')
   @UsePipes(new ValidationPipe({ transform: true }))
   public async login(@Body() { email, password }: LoginDto) {
     return this.loginService.login(email, password);
