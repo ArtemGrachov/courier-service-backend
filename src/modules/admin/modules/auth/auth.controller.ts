@@ -1,4 +1,5 @@
-import { Body, Controller, HttpCode, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Request, UsePipes, ValidationPipe } from '@nestjs/common';
+import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 
@@ -13,6 +14,8 @@ import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+
+import { IRequstUser } from 'src/types/auth/request-user';
 
 @Controller('admin/auth')
 export class AuthController {
@@ -53,8 +56,12 @@ export class AuthController {
   @Post('change-password')
   @Roles([ERoles.ADMIN])
   @UsePipes(new ValidationPipe({ transform: true }))
-  public async changePassword(@Body() { password, confirmPassword }: ChangePasswordDto) {
-    await this.changePasswordService.changePassword(password, confirmPassword);
+  public async changePassword(
+    @Request() req: ExpressRequest,
+    @Body() { password }: ChangePasswordDto,
+  ) {
+    const user = req['user'] as IRequstUser;
+    await this.changePasswordService.changePassword(user.id, password);
   }
 }
 
