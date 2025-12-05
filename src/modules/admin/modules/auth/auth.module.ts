@@ -7,10 +7,11 @@ import { MailModule } from 'src/modules/mail/mail.module';
 
 import { AuthController } from './auth.controller';
 import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
+import { LoginService } from './services/login/login.service';
 
 @Module({
   controllers: [AuthController],
   imports: [PrismaModule, PasswordModule, ConfigModule, MailModule],
-  providers: [ForgotPasswordService],
+  providers: [ForgotPasswordService, LoginService],
 })
 export class AuthModule {}
