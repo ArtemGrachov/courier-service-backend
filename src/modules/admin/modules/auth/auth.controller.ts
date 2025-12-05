@@ -1,5 +1,9 @@
 import { Body, Controller, HttpCode, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 
+import { ERoles } from 'src/constants/auth';
+
+import { Roles } from 'src/modules/auth/decorators/role.decorator';
+
 import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
 import { LoginService } from './services/login/login.service';
 import { ResetPasswordService } from './services/reset-password/reset-password.service';
@@ -20,6 +24,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @Roles([ERoles.GUEST])
   @HttpCode(200)
   @UsePipes(new ValidationPipe({ transform: true }))
   public async login(@Body() { email, password }: LoginDto) {
@@ -27,6 +32,7 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @Roles([ERoles.GUEST])
   @UsePipes(new ValidationPipe({ transform: true }))
   public async forgotPassword(@Body() { email }: ForgotPasswordDto) {
     await this.forgotPasswordService.forgotPassword(email);
@@ -38,12 +44,14 @@ export class AuthController {
   }
 
   @Post('reset-password')
+  @Roles([ERoles.GUEST])
   @UsePipes(new ValidationPipe({ transform: true }))
   public async resetPassword(@Body() { token, password }: ResetPasswordDto) {
     await this.resetPasswordService.resetPassword(token, password);
   }
 
   @Post('change-password')
+  @Roles([ERoles.ADMIN])
   @UsePipes(new ValidationPipe({ transform: true }))
   public async changePassword(@Body() { password, confirmPassword }: ChangePasswordDto) {
     await this.changePasswordService.changePassword(password, confirmPassword);

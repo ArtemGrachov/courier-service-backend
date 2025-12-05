@@ -1,6 +1,6 @@
 import type { ERoles } from "src/constants/auth";
 
-export interface IUserData {
+export interface IRequstUser {
   id: number;
   email: string;
   role: ERoles;

@@ -5,6 +5,8 @@ import { Request } from 'express';
 
 import { ENV_VARS } from 'src/constants/env';
 
+import type { IRequstUser } from 'src/types/auth/request-user';
+
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
@@ -16,20 +18,18 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
-    if (!token) {
-      throw new UnauthorizedException();
-    }
-
-    try {
-      const payload = await this.jwtService.verifyAsync(
-        token,
-        {
-          secret: this.configService.get<string>(ENV_VARS.JWT_SECRET_KEY),
-        },
-      );
-      request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
+    if (token) {
+      try {
+        const payload = await this.jwtService.verifyAsync<IRequstUser>(
+          token,
+          {
+            secret: this.configService.get<string>(ENV_VARS.JWT_SECRET_KEY),
+          },
+        );
+        request['user'] = payload;
+      } catch {
+        throw new UnauthorizedException();
+      }
     }
 
     return true;
