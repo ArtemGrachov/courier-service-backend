@@ -3,10 +3,12 @@ import { Body, Controller, HttpCode, Post, UsePipes, ValidationPipe } from '@nes
 import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
 import { LoginService } from './services/login/login.service';
 import { ResetPasswordService } from './services/reset-password/reset-password.service';
+import { ChangePasswordService } from './services/change-password/change-password.service';
 
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('admin/auth')
 export class AuthController {
@@ -14,6 +16,7 @@ export class AuthController {
     private loginService: LoginService,
     private forgotPasswordService: ForgotPasswordService,
     private resetPasswordService: ResetPasswordService,
+    private changePasswordService: ChangePasswordService,
   ) {}
 
   @Post('login')
@@ -38,6 +41,12 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ transform: true }))
   public async resetPassword(@Body() { token, password }: ResetPasswordDto) {
     await this.resetPasswordService.resetPassword(token, password);
+  }
+
+  @Post('change-password')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  public async changePassword(@Body() { password, confirmPassword }: ChangePasswordDto) {
+    await this.changePasswordService.changePassword(password, confirmPassword);
   }
 }
 

@@ -10,10 +10,11 @@ import { AuthController } from './auth.controller';
 import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
 import { LoginService } from './services/login/login.service';
 import { ResetPasswordService } from './services/reset-password/reset-password.service';
+import { ChangePasswordService } from './services/change-password/change-password.service';
 
 @Module({
   controllers: [AuthController],
   imports: [PrismaModule, PasswordModule, ConfigModule, MailModule, TokenModule],
-  providers: [ForgotPasswordService, LoginService, ResetPasswordService],
+  providers: [ForgotPasswordService, LoginService, ResetPasswordService, ChangePasswordService],
 })
 export class AuthModule {}
