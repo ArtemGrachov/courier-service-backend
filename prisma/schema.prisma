@@ -90,3 +90,10 @@ model CourierRate {
   order     Order       @relation(fields: [orderId], references: [id])
   orderId   Int
 }
+
+model ResetPasswordToken {
+  id      Int    @id @default(autoincrement())
+  token   String
+  expires Int
+  userId  Int
+}

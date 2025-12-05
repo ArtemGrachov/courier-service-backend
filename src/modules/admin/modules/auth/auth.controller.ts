@@ -6,9 +6,11 @@ import { ENV_VARS } from 'src/constants/env';
 
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { PasswordService } from 'src/modules/password/services/password/password.service';
+import { IncorrectEmailOrPasswordException } from './exceptions/incorrect-email-or-password.exception';
+import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
 
 import { LoginDto } from './dto/login.dto';
-import { IncorrectEmailOrPasswordException } from './exceptions/incorrect-email-or-password.exception';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Controller('admin/auth')
 export class AuthController {
@@ -16,6 +18,7 @@ export class AuthController {
     private prismaService: PrismaService,
     private passwordService: PasswordService,
     private configService: ConfigService,
+    private forgotPasswordService: ForgotPasswordService,
   ) {}
 
   @Post()
@@ -42,6 +45,17 @@ export class AuthController {
     const token = jwt.sign({ id: user.id, email: user.email, role: 'admin' }, jwtSecretKey, { expiresIn: '1h' });
 
     return { token };
+  }
+
+  @Post('forgot-password')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  public async forgotPassword(@Body() { email }: ForgotPasswordDto) {
+    await this.forgotPasswordService.forgotPassword(email);
+
+    return {
+      message: 'FORGOT_PASSWORD_LINK_SENT',
+      email,
+    };
   }
 }
 
