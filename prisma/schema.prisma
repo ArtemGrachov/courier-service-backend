@@ -95,4 +95,5 @@ model ResetPasswordToken {
   id      Int    @id @default(autoincrement())
   token   String
   expires Int
+  userId  Int
 }

@@ -6,11 +6,11 @@ import { ENV_VARS } from 'src/constants/env';
 
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { PasswordService } from 'src/modules/password/services/password/password.service';
-import { MailService } from 'src/modules/mail/services/mail/mail.service';
+import { IncorrectEmailOrPasswordException } from './exceptions/incorrect-email-or-password.exception';
+import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
 
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { IncorrectEmailOrPasswordException } from './exceptions/incorrect-email-or-password.exception';
 
 @Controller('admin/auth')
 export class AuthController {
@@ -18,7 +18,7 @@ export class AuthController {
     private prismaService: PrismaService,
     private passwordService: PasswordService,
     private configService: ConfigService,
-    private mailService: MailService,
+    private forgotPasswordService: ForgotPasswordService,
   ) {}
 
   @Post()
@@ -47,34 +47,15 @@ export class AuthController {
     return { token };
   }
 
-  private forgotPasswordResponse(email: string) {
+  @Post('forgot-password')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  public async forgotPassword(@Body() { email }: ForgotPasswordDto) {
+    await this.forgotPasswordService.forgotPassword(email);
+
     return {
       message: 'FORGOT_PASSWORD_LINK_SENT',
       email,
     };
-  }
-
-  @Post('forgot-password')
-  @UsePipes(new ValidationPipe({ transform: true }))
-  public async forgotPassword(@Body() { email }: ForgotPasswordDto) {
-    const user = await this.prismaService.userAdmin.findUnique({
-      where: {
-        email,
-      },
-    });
-
-    if (!user) {
-      return this.forgotPasswordResponse(email);
-    }
-
-    const from = this.configService.get(ENV_VARS.MAIL_FROM);
-    const resetPasswordLink = this.configService.get(ENV_VARS.RESET_PASSWORD_LINK);
-    // TODO token
-    const text = `Password reset link: ${resetPasswordLink.replace('__TOKEN__', 1234567890)}`;
-
-    await this.mailService.sendEmail(from, email, 'Password reset link', text);
-
-    return this.forgotPasswordResponse(email);
   }
 }
 
