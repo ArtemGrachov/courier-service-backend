@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import jwt from 'jsonwebtoken';
-
-import { ENV_VARS } from 'src/constants/env';
 
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { PasswordService } from 'src/modules/password/services/password/password.service';
+import { AuthTokenService } from '../auth-token/auth-token.service';
 
 import { IncorrectEmailOrPasswordException } from '../../exceptions/incorrect-email-or-password.exception';
 
@@ -13,8 +10,8 @@ import { IncorrectEmailOrPasswordException } from '../../exceptions/incorrect-em
 export class LoginService {
   constructor(
     private prismaService: PrismaService,
-    private configService: ConfigService,
     private passwordService: PasswordService,
+    private authTokenService: AuthTokenService,
   ) {}
 
   public async login(email: string, password: string) {
@@ -34,11 +31,9 @@ export class LoginService {
       throw new IncorrectEmailOrPasswordException();
     }
 
-    const jwtSecretKey = this.configService.get(ENV_VARS.JWT_SECRET_KEY) as string;
-
-    const token = jwt.sign({ id: user.id, email: user.email, role: 'admin', sessionUuid: user.sessionUuid }, jwtSecretKey, { expiresIn: '1h' });
-
-    return { token };
+    return {
+      token: await this.authTokenService.authToken(user),
+    };
   }
 }
 
