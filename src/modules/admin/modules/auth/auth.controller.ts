@@ -9,6 +9,7 @@ import { ForgotPasswordService } from './services/forgot-password/forgot-passwor
 import { LoginService } from './services/login/login.service';
 import { ResetPasswordService } from './services/reset-password/reset-password.service';
 import { ChangePasswordService } from './services/change-password/change-password.service';
+import { AuthTokenService } from './services/auth-token/auth-token.service';
 
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -24,6 +25,7 @@ export class AuthController {
     private forgotPasswordService: ForgotPasswordService,
     private resetPasswordService: ResetPasswordService,
     private changePasswordService: ChangePasswordService,
+    private authTokenService: AuthTokenService,
   ) {}
 
   @Post('login')
@@ -60,8 +62,12 @@ export class AuthController {
     @Request() req: ExpressRequest,
     @Body() { password }: ChangePasswordDto,
   ) {
-    const user = req['user'] as IRequstUser;
-    await this.changePasswordService.changePassword(user.id, password);
+    const requestUser = req['user'] as IRequstUser;
+    const user = await this.changePasswordService.changePassword(requestUser.id, password);
+
+    return {
+      token: await this.authTokenService.authToken(user),
+    };
   }
 }
 

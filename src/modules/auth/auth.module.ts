@@ -7,6 +7,7 @@ import { ENV_VARS } from 'src/constants/env';
 
 import { AuthGuard } from './guards/auth/auth.guard';
 import { RoleGuard } from './guards/role/role.guard';
+import { AuthUuidService } from './services/auth-uuid/auth-uuid.service';
 
 @Module({
   imports: [
@@ -28,9 +29,11 @@ import { RoleGuard } from './guards/role/role.guard';
       provide: APP_GUARD,
       useClass: RoleGuard,
     },
+    AuthUuidService,
   ],
   exports: [
     JwtModule,
+    AuthUuidService,
   ],
 })
 export class AuthModule {}

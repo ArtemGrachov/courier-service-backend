@@ -4,5 +4,6 @@ export interface IRequstUser {
   id: number;
   email: string;
   role: ERoles;
+  authUuid: string;
 }
 

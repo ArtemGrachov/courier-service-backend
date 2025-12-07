@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-
-import { ERoles } from 'src/constants/auth';
 
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { PasswordService } from 'src/modules/password/services/password/password.service';
+import { AuthTokenService } from '../auth-token/auth-token.service';
 
 import { IncorrectEmailOrPasswordException } from '../../exceptions/incorrect-email-or-password.exception';
 
@@ -13,7 +11,7 @@ export class LoginService {
   constructor(
     private prismaService: PrismaService,
     private passwordService: PasswordService,
-    private jwtService: JwtService,
+    private authTokenService: AuthTokenService,
   ) {}
 
   public async login(email: string, password: string) {
@@ -33,14 +31,9 @@ export class LoginService {
       throw new IncorrectEmailOrPasswordException();
     }
 
-    const token = await this.jwtService.signAsync({
-      id: user.id,
-      email: user.email,
-      role: ERoles.ADMIN,
-      sessionUuid: user.sessionUuid,
-    }, { expiresIn: '1h' });
-
-    return { token };
+    return {
+      token: await this.authTokenService.authToken(user),
+    };
   }
 }
 

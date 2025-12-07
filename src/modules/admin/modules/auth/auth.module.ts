@@ -13,6 +13,7 @@ import { ForgotPasswordService } from './services/forgot-password/forgot-passwor
 import { LoginService } from './services/login/login.service';
 import { ResetPasswordService } from './services/reset-password/reset-password.service';
 import { ChangePasswordService } from './services/change-password/change-password.service';
+import { AuthTokenService } from './services/auth-token/auth-token.service';
 
 @Module({
   controllers: [AuthController],
@@ -24,7 +25,7 @@ import { ChangePasswordService } from './services/change-password/change-passwor
     MailModule,
     TokenModule,
   ],
-  providers: [ForgotPasswordService, LoginService, ResetPasswordService, ChangePasswordService],
+  providers: [ForgotPasswordService, LoginService, ResetPasswordService, ChangePasswordService, AuthTokenService],
 })
 export class AuthModule {}
 

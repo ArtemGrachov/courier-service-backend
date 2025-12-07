@@ -5,6 +5,8 @@ import { Request } from 'express';
 
 import { ENV_VARS } from 'src/constants/env';
 
+import { AuthUuidService } from '../../services/auth-uuid/auth-uuid.service';
+
 import type { IRequstUser } from 'src/types/auth/request-user';
 
 @Injectable()
@@ -12,6 +14,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private configService: ConfigService,
     private jwtService: JwtService,
+    private authUuidService: AuthUuidService,
   ) {}
 
   async canActivate(context: ExecutionContext) {
@@ -26,6 +29,13 @@ export class AuthGuard implements CanActivate {
             secret: this.configService.get<string>(ENV_VARS.JWT_SECRET_KEY),
           },
         );
+
+        const compareUuid = this.authUuidService.get(payload.id);
+
+        if (payload.authUuid !== compareUuid) {
+          throw new UnauthorizedException();
+        }
+
         request['user'] = payload;
       } catch {
         throw new UnauthorizedException();
