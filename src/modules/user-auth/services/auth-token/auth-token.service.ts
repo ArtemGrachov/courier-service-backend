@@ -5,7 +5,7 @@ import { ERoles } from 'src/constants/auth';
 
 import { AuthUuidService } from 'src/modules/auth/services/auth-uuid/auth-uuid.service';
 
-import { UserAdminMinAggregateOutputType } from 'src/generated/prisma/models';
+import type { IAbstractUser } from '../../types/abstract-user';
 
 @Injectable()
 export class AuthTokenService {
@@ -14,7 +14,7 @@ export class AuthTokenService {
     private authUuidService: AuthUuidService,
   ) {}
 
-  public async authToken(user: UserAdminMinAggregateOutputType) {
+  public async authToken(user: IAbstractUser) {
     const token = await this.jwtService.signAsync({
       id: user.id!,
       email: user.email!,

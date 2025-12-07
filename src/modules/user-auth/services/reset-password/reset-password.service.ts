@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import dayjs from 'dayjs';
 
+import { AbstractUserService } from '../abstract-user/abstract-user.service';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { TokenService } from 'src/modules/token/services/token/token.service';
 import { PasswordService } from 'src/modules/password/services/password/password.service';
@@ -13,6 +14,7 @@ export class ResetPasswordService {
     private tokenService: TokenService,
     private prismaService: PrismaService,
     private passwordService: PasswordService,
+    private userService: AbstractUserService,
   ) {}
 
   public async resetPassword(token: string, password: string) {
@@ -34,7 +36,7 @@ export class ResetPasswordService {
 
     const userId = resetToken.userId;
 
-    const user = await this.prismaService.userAdmin.findUnique({ where: { id: userId } });
+    const user = await this.userService.userById(userId);
 
     if (!user) {
       throw new IncorrectResetTokenException();
