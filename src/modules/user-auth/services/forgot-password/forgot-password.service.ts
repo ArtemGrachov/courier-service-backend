@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import dayjs, { ManipulateType } from 'dayjs';
 
 import { ENV_VARS } from 'src/constants/env';
+
+import { AbstractUserService } from '../abstract-user/abstract-user.service';
 import { MailService } from 'src/modules/mail/services/mail/mail.service';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { TokenService } from 'src/modules/token/services/token/token.service';
@@ -19,14 +21,11 @@ export class ForgotPasswordService {
     private configService: ConfigService,
     private mailService: MailService,
     private tokenService: TokenService,
+    private userService: AbstractUserService,
   ) {}
 
   public async forgotPassword(email: string) {
-    const user = await this.prismaService.userAdmin.findUnique({
-      where: {
-        email,
-      },
-    });
+    const user = await this.userService.userByEmail(email);
 
     if (!user) {
       return;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { PrismaService } from 'src/modules/prisma/services/prisma.service';
+import { AbstractUserService } from '../abstract-user/abstract-user.service';
 import { PasswordService } from 'src/modules/password/services/password/password.service';
 import { AuthTokenService } from '../auth-token/auth-token.service';
 
@@ -9,17 +9,13 @@ import { IncorrectEmailOrPasswordException } from '../../exceptions/incorrect-em
 @Injectable()
 export class LoginService {
   constructor(
-    private prismaService: PrismaService,
+    private userService: AbstractUserService,
     private passwordService: PasswordService,
     private authTokenService: AuthTokenService,
   ) {}
 
   public async login(email: string, password: string) {
-    const user = await this.prismaService.userAdmin.findUnique({
-      where: {
-        email,
-      },
-    });
+    const user = await this.userService.userByEmail(email);
 
     if (!user) {
       throw new IncorrectEmailOrPasswordException();

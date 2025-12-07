@@ -5,21 +5,21 @@ import { ERoles } from 'src/constants/auth';
 
 import { Roles } from 'src/modules/auth/decorators/role.decorator';
 
-import { ForgotPasswordService } from './services/forgot-password/forgot-password.service';
-import { LoginService } from './services/login/login.service';
-import { ResetPasswordService } from './services/reset-password/reset-password.service';
-import { ChangePasswordService } from './services/change-password/change-password.service';
-import { AuthTokenService } from './services/auth-token/auth-token.service';
+import { ForgotPasswordService } from 'src/modules/user-auth/services/forgot-password/forgot-password.service';
+import { LoginService } from 'src/modules/user-auth/services/login/login.service';
+import { ResetPasswordService } from 'src/modules/user-auth/services/reset-password/reset-password.service';
+import { ChangePasswordService } from 'src/modules/user-auth/services/change-password/change-password.service';
+import { AuthTokenService } from 'src/modules/user-auth/services/auth-token/auth-token.service';
 
-import { LoginDto } from './dto/login.dto';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import { LoginDto } from 'src/dto/login.dto';
+import { ForgotPasswordDto } from 'src/dto/forgot-password.dto';
+import { ResetPasswordDto } from 'src/dto/reset-password.dto';
+import { ChangePasswordDto } from 'src/dto/change-password.dto';
 
 import { IRequstUser } from 'src/types/auth/request-user';
 
 @Controller('admin/auth')
-export class AuthController {
+export class AdminAuthController {
   constructor(
     private loginService: LoginService,
     private forgotPasswordService: ForgotPasswordService,
