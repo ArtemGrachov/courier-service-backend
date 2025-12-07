@@ -15,6 +15,7 @@ import { ResetPasswordService } from './services/reset-password/reset-password.s
 import { ChangePasswordService } from './services/change-password/change-password.service';
 
 import type { IUserModuleOptions } from './types/user-module-options';
+import { USER_ROLE } from './constants/user-role';
 
 @Module({})
 export class UserAuthModule {
@@ -34,6 +35,10 @@ export class UserAuthModule {
       {
         provide: AbstractUserService,
         useClass: options.useUserServiceClass,
+      },
+      {
+        provide: USER_ROLE,
+        useValue: options.userRole,
       },
       AuthTokenService,
       ForgotPasswordService,

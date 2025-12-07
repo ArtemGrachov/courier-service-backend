@@ -50,14 +50,7 @@ export class ResetPasswordService {
 
     const passwordHash = await this.passwordService.generatePasswordHash(password);
 
-    await this.prismaService.userAdmin.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        passwordHash,
-      },
-    });
+    await this.userService.updatePassword(userId, passwordHash);
   }
 }
 

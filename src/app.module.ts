@@ -5,6 +5,7 @@ import { AdminModule } from './modules/admin/admin.module';
 
 import { AuthModule } from './modules/auth/auth.module';
 import { UserAuthModule } from './modules/user-auth/user-auth.module';
+import { CourierModule } from './modules/courier/courier.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { UserAuthModule } from './modules/user-auth/user-auth.module';
     AdminModule,
     AuthModule,
     UserAuthModule,
+    CourierModule,
   ],
 })
 export class AppModule {}
