@@ -5,12 +5,14 @@ import { ERoles } from 'src/constants/auth';
 
 import { Roles } from 'src/modules/auth/decorators/role.decorator';
 
+import { ClientRegistrationService } from './services/client-registration/client-registration.service';
 import { ForgotPasswordService } from 'src/modules/user-auth/services/forgot-password/forgot-password.service';
 import { LoginService } from 'src/modules/user-auth/services/login/login.service';
 import { ResetPasswordService } from 'src/modules/user-auth/services/reset-password/reset-password.service';
 import { ChangePasswordService } from 'src/modules/user-auth/services/change-password/change-password.service';
 import { AuthTokenService } from 'src/modules/user-auth/services/auth-token/auth-token.service';
 
+import { RegistrationDto } from './dto/registration.dto';
 import { LoginDto } from 'src/dto/login.dto';
 import { ForgotPasswordDto } from 'src/dto/forgot-password.dto';
 import { ResetPasswordDto } from 'src/dto/reset-password.dto';
@@ -26,6 +28,7 @@ export class ClientAuthController {
     private resetPasswordService: ResetPasswordService,
     private changePasswordService: ChangePasswordService,
     private authTokenService: AuthTokenService,
+    private clientRegistrationService: ClientRegistrationService,
   ) {}
 
   @Post('login')
@@ -67,6 +70,17 @@ export class ClientAuthController {
 
     return {
       token: await this.authTokenService.authToken(user),
+    };
+  }
+
+  @Post('registration')
+  @Roles([ERoles.GUEST])
+  @UsePipes(new ValidationPipe({ transform: true }))
+  public async registration(@Body() payload: RegistrationDto) {
+    await this.clientRegistrationService.registration(payload);
+
+    return {
+      message: 'CLIENT_REGISTERED_SUCCESSFULLY',
     };
   }
 }
