@@ -41,8 +41,6 @@ export class CreateOrderDto {
   @IsNumber()
   receiverLng: number;
 
-  @IsNotEmpty()
-  @IsNumber()
   receiverId?: number;
 
   receiverName?: string;

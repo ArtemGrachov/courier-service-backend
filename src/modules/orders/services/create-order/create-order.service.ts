@@ -60,6 +60,7 @@ export class CreateOrderService {
         receiverLat,
         senderId,
         receiverId: receiver.id,
+        courierId: null,
       },
     });
 
