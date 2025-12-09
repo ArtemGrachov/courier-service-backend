@@ -1,13 +1,25 @@
-import { Body, Controller, Get, ParseIntPipe, Post, Query, Param, Request, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  ParseIntPipe,
+  Post,
+  Query,
+  Param,
+  Request,
+  UsePipes,
+  ValidationPipe,
+  NotFoundException,
+} from '@nestjs/common';
 import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 
 import { Roles } from '../auth/decorators/role.decorator';
 
-import { PrismaService } from '../prisma/services/prisma.service';
 import { CreateOrderService } from './services/create-order/create-order.service';
 import { GetOrdersService } from './services/get-orders/get-orders.service';
+import { GetOrderService } from './services/get-order/get-order.service';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 
@@ -18,7 +30,7 @@ export class OrdersController {
   constructor(
     private createOrderService: CreateOrderService,
     private getOrdersService: GetOrdersService,
-    private prismaService: PrismaService,
+    private getOrderService: GetOrderService,
   ) {}
 
   @Post('')
@@ -41,16 +53,24 @@ export class OrdersController {
     return result;
   }
 
-  // TODO access for roles
   @Get(':id')
-  public async getOrder(@Param('id', new ParseIntPipe) id: number) {
-    const order = await this.prismaService.order.findUnique({
-      where: { id },
-      include: {
-        sender: true,
-        receiver: true,
-      },
-    });
+  @Roles([ERoles.ADMIN, ERoles.COURIER, ERoles.CLIENT])
+  public async getOrder(
+    @Request() req: ExpressRequest,
+    @Param('id', new ParseIntPipe) id: number,
+  ) {
+    const requestUser = req['user'] as IRequstUser;
+    const order = await this.getOrderService.getOrder(id);
+
+    if (!order) {
+      throw new NotFoundException();
+    }
+
+    const hasAccess = this.getOrderService.checkOrderAccess(requestUser, order);
+
+    if (!hasAccess) {
+      throw new NotFoundException();
+    }
 
     return order;
   }

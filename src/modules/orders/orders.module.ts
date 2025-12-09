@@ -3,10 +3,11 @@ import { OrdersController } from './orders.controller';
 import { CreateOrderService } from './services/create-order/create-order.service';
 import { PrismaModule } from '../prisma/prisma.module';
 import { GetOrdersService } from './services/get-orders/get-orders.service';
+import { GetOrderService } from './services/get-order/get-order.service';
 
 @Module({
   imports: [PrismaModule],
   controllers: [OrdersController],
-  providers: [CreateOrderService, GetOrdersService]
+  providers: [CreateOrderService, GetOrdersService, GetOrderService]
 })
 export class OrdersModule {}
