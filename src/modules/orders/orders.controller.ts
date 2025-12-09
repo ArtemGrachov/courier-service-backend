@@ -16,6 +16,7 @@ import {
 import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
+import { EOrderStatus } from './constants/order';
 
 import { Roles } from '../auth/decorators/role.decorator';
 
@@ -23,11 +24,17 @@ import { CreateOrderService } from './services/create-order/create-order.service
 import { GetOrdersService } from './services/get-orders/get-orders.service';
 import { GetOrderService } from './services/get-order/get-order.service';
 import { AcceptOrderService } from './services/accept-order/accept-order.service';
+import { CompleteOrderService } from './services/complete-order/complete-order.service';
 
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CompleteOrderDto } from './dto/complete-order.dto';
+
+import type { IRequstUser } from 'src/types/auth/request-user';
 
 import { OrderAlreadyAcceptedException } from './exceptions/order-already-accepted.exception';
-import type { IRequstUser } from 'src/types/auth/request-user';
+import { OrderAlreadyCompletedException } from './exceptions/order-already-completed.exception';
+import { OrderNotAcceptedException } from './exceptions/order-not-accepted.exception';
+import { OrderNotProcessingException } from './exceptions/order-not-processing.exception';
 
 @Controller('orders')
 export class OrdersController {
@@ -36,6 +43,7 @@ export class OrdersController {
     private getOrdersService: GetOrdersService,
     private getOrderService: GetOrderService,
     private acceptOrderService: AcceptOrderService,
+    private completeOrderService: CompleteOrderService,
   ) {}
 
   @Post('')
@@ -99,14 +107,54 @@ export class OrdersController {
       throw new ForbiddenException();
     }
 
-    await this.acceptOrderService.acceptOrder(requestUser, id);
-
     if (order.courierId != null) {
       throw new OrderAlreadyAcceptedException();
     }
 
+    await this.acceptOrderService.acceptOrder(requestUser, id);
+
     return {
       message: 'ORDER_ACCEPTED_SUCCESSFULLY',
+    };
+  }
+
+  @Patch(':id/complete')
+  @Roles([ERoles.COURIER])
+  @UsePipes(new ValidationPipe({ transform: true }))
+  public async completeOrder(
+    @Request() req: ExpressRequest,
+    @Param('id', new ParseIntPipe) id: number,
+    @Body() { senderRating, receiverRating }: CompleteOrderDto,
+  ) {
+    const requestUser = req['user'] as IRequstUser;
+    const order = await this.getOrderService.getOrder(id);
+
+    if (!order) {
+      throw new NotFoundException();
+    }
+
+    const hasAccess = this.getOrderService.checkOrderAccess(requestUser, order);
+
+    if (!hasAccess) {
+      throw new ForbiddenException();
+    }
+
+    if (order.courierId == null) {
+      throw new OrderNotAcceptedException();
+    }
+
+    if (order.status === EOrderStatus.COMPLETED) {
+      throw new OrderAlreadyCompletedException();
+    }
+
+    if (order.status !== EOrderStatus.PROCESSING) {
+      throw new OrderNotProcessingException();
+    }
+
+    await this.completeOrderService.completeOrder(requestUser, id, senderRating, receiverRating);
+
+    return {
+      message: 'ORDER_COMPLETED_SUCCESSFULLY',
     };
   }
 }
