@@ -10,11 +10,17 @@ export class AdminAuthUserService extends AbstractUserService {
   }
 
   public async userByEmail(email: string) {
-    return this.prismaService.userAdmin.findUnique({ where: { email } });
+    return this.prismaService.userAdmin.findUnique({
+      where: { email },
+      omit: { passwordHash: false },
+    });
   }
 
   public async userById(id: number) {
-    return this.prismaService.userAdmin.findUnique({ where: { id } });
+    return this.prismaService.userAdmin.findUnique({
+      where: { id },
+      omit: { passwordHash: false },
+    });
   }
 
   public async updatePassword(id: number, passwordHash: string) {

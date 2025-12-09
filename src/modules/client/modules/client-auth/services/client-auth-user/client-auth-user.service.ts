@@ -10,11 +10,17 @@ export class ClientAuthUserService extends AbstractUserService {
   }
 
   public async userByEmail(email: string) {
-    return this.prismaService.userClient.findUnique({ where: { email } });
+    return this.prismaService.userClient.findUnique({
+      where: { email },
+      omit: { passwordHash: false },
+    });
   }
 
   public async userById(id: number) {
-    return this.prismaService.userClient.findUnique({ where: { id } });
+    return this.prismaService.userClient.findUnique({
+      where: { id },
+      omit: { passwordHash: false },
+    });
   }
 
   public async updatePassword(id: number, passwordHash: string) {
