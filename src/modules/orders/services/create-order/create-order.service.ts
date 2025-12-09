@@ -38,7 +38,7 @@ export class CreateOrderService {
     if (!receiver) {
       receiver = await this.prismaService.userClient.create({
         data: {
-          email: '',
+          email: `noemail_${receiverPhone}`,
           name: receiverName!,
           phone: receiverPhone!,
           passwordHash: '',
@@ -61,6 +61,7 @@ export class CreateOrderService {
         senderId,
         receiverId: receiver.id,
         courierId: null,
+        orderedAt: new Date().getTime(),
       },
     });
 
