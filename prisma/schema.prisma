@@ -49,6 +49,7 @@ model Order {
   receiverId      Int           @default(-1)
   courier         UserCourier?  @relation(fields: [courierId], references: [id])
   courierId       Int?          @default(-1)
+  status          String        @default("ordered")
 }
 
 model UserCourier {
