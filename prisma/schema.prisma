@@ -47,8 +47,8 @@ model Order {
   receiverAddress String
   receiver        UserClient    @relation("ReceiverOrders", fields: [receiverId], references: [id])
   receiverId      Int           @default(-1)
-  courier         UserCourier   @relation(fields: [courierId], references: [id])
-  courierId       Int           @default(-1)
+  courier         UserCourier?  @relation(fields: [courierId], references: [id])
+  courierId       Int?          @default(-1)
 }
 
 model UserCourier {
