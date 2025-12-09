@@ -79,7 +79,6 @@ model UserClient {
 }
 
 model ClientRate {
-  id        Int         @id @default(autoincrement())
   rating    Int
   client    UserClient  @relation(fields: [clientId], references: [id])
   clientId  Int
@@ -87,6 +86,8 @@ model ClientRate {
   courierId Int
   order     Order       @relation(fields: [orderId], references: [id])
   orderId   Int
+
+  @@id([clientId, courierId, orderId])
 }
 
 model CourierRate {
