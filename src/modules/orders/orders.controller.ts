@@ -1,4 +1,4 @@
-import { Body, Controller, Get, ParseIntPipe, Post, Query, Request, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, ParseIntPipe, Post, Query, Param, Request, UsePipes, ValidationPipe } from '@nestjs/common';
 import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
@@ -18,6 +18,7 @@ export class OrdersController {
   constructor(
     private createOrderService: CreateOrderService,
     private getOrdersService: GetOrdersService,
+    private prismaService: PrismaService,
   ) {}
 
   @Post('')
@@ -38,6 +39,20 @@ export class OrdersController {
   ) {
     const result = await this.getOrdersService.getOrders({ page, itemsPerPage });
     return result;
+  }
+
+  // TODO access for roles
+  @Get(':id')
+  public async getOrder(@Param('id', new ParseIntPipe) id: number) {
+    const order = await this.prismaService.order.findUnique({
+      where: { id },
+      include: {
+        sender: true,
+        receiver: true,
+      },
+    });
+
+    return order;
   }
 }
 
