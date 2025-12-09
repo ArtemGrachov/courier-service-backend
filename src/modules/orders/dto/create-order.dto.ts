@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString, ValidateIf } from 'class-validator';
 
 export class CreateOrderDto {
   @IsNotEmpty()
@@ -41,10 +41,16 @@ export class CreateOrderDto {
   @IsNumber()
   receiverLng: number;
 
+  @ValidateIf(o => !o.receiverName && !o.receiverPhone)
+  @IsNumber()
   receiverId?: number;
 
+  @ValidateIf(o => !o.receiverId)
+  @IsString()
   receiverName?: string;
 
+  @ValidateIf(o => !o.receiverId)
+  @IsString()
   receiverPhone?: string;
 }
 
