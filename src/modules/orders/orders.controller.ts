@@ -18,6 +18,8 @@ import type { Request as ExpressRequest } from 'express';
 import { ERoles } from 'src/constants/auth';
 import { EOrderStatus } from './constants/order';
 
+import { ParseIntArrayPipe } from 'src/pipes/parse-int-array/parse-int-array.pipe';
+
 import { Roles } from '../auth/decorators/role.decorator';
 
 import { CreateOrderService } from './services/create-order/create-order.service';
@@ -61,8 +63,9 @@ export class OrdersController {
   public async getOrders(
     @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
     @Query('itemsPerPage', new ParseIntPipe({ optional: true })) itemsPerPage: number = 10,
+    @Query('couriers', new ParseIntArrayPipe({ optional: true })) couriers?: number[],
   ) {
-    const result = await this.getOrdersService.getOrders({ page, itemsPerPage });
+    const result = await this.getOrdersService.getOrders({ page, itemsPerPage, couriers });
     return result;
   }
 
