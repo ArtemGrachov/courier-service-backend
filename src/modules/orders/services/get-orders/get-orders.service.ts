@@ -10,14 +10,26 @@ export class GetOrdersService {
     private prismaService: PrismaService,
   ) {}
 
-  public async getOrders({ page, itemsPerPage, couriers }: IGetOrdersQuery) {
+  public async getOrders({ page, itemsPerPage, couriers, senders, receivers }: IGetOrdersQuery) {
     const skip = (page - 1) * itemsPerPage;
 
     let where: OrderWhereInput = {};
 
-    if (couriers) {
+    if (couriers?.length) {
       where.courierId = {
         in: couriers,
+      };
+    }
+
+    if (senders?.length) {
+      where.senderId = {
+        in: senders,
+      };
+    }
+
+    if (receivers?.length) {
+      where.receiverId = {
+        in: receivers,
       };
     }
 

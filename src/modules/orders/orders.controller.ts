@@ -64,8 +64,17 @@ export class OrdersController {
     @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
     @Query('itemsPerPage', new ParseIntPipe({ optional: true })) itemsPerPage: number = 10,
     @Query('couriers', new ParseIntArrayPipe({ optional: true })) couriers?: number[],
+    @Query('senders', new ParseIntArrayPipe({ optional: true })) senders?: number[],
+    @Query('receivers', new ParseIntArrayPipe({ optional: true })) receivers?: number[],
   ) {
-    const result = await this.getOrdersService.getOrders({ page, itemsPerPage, couriers });
+    const result = await this.getOrdersService.getOrders({
+      page,
+      itemsPerPage,
+      couriers,
+      senders,
+      receivers,
+    });
+
     return result;
   }
 
