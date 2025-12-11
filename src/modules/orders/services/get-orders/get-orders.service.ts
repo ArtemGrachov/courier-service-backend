@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
+import { ESortOrder } from 'src/constants/sort';
+
 import { IGetOrdersQuery } from './types';
-import { OrderWhereInput } from 'src/generated/prisma/models';
+import { OrderOrderByWithRelationInput, OrderWhereInput } from 'src/generated/prisma/models';
 
 @Injectable()
 export class GetOrdersService {
@@ -10,9 +12,18 @@ export class GetOrdersService {
     private prismaService: PrismaService,
   ) {}
 
-  public async getOrders({ page, itemsPerPage, couriers, senders, receivers }: IGetOrdersQuery) {
+  public async getOrders({
+    page,
+    itemsPerPage,
+    couriers,
+    senders,
+    receivers,
+    sortBy,
+    sortOrder,
+  }: IGetOrdersQuery) {
     const skip = (page - 1) * itemsPerPage;
 
+    let orderBy: OrderOrderByWithRelationInput | undefined;
     let where: OrderWhereInput = {};
 
     if (couriers?.length) {
@@ -33,10 +44,17 @@ export class GetOrdersService {
       };
     }
 
+    if (sortBy) {
+      orderBy = {
+        [sortBy]: sortOrder ?? ESortOrder.DESC,
+      };
+    }
+
     const items = await this.prismaService.order.findMany({
       skip,
       take: itemsPerPage,
       where,
+      orderBy,
     });
 
     return {

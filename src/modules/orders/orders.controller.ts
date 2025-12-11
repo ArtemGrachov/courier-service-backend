@@ -12,11 +12,14 @@ import {
   NotFoundException,
   Patch,
   ForbiddenException,
+  ParseEnumPipe,
 } from '@nestjs/common';
 import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 import { EOrderStatus } from './constants/order';
+import { ESortOrder } from 'src/constants/sort';
+import { EOrdersSortBy } from './services/get-orders/constants';
 
 import { ParseIntArrayPipe } from 'src/pipes/parse-int-array/parse-int-array.pipe';
 
@@ -66,6 +69,8 @@ export class OrdersController {
     @Query('couriers', new ParseIntArrayPipe({ optional: true })) couriers?: number[],
     @Query('senders', new ParseIntArrayPipe({ optional: true })) senders?: number[],
     @Query('receivers', new ParseIntArrayPipe({ optional: true })) receivers?: number[],
+    @Query('sortBy', new ParseEnumPipe(EOrdersSortBy, { optional: true })) sortBy?: EOrdersSortBy,
+    @Query('sortOrder', new ParseEnumPipe(ESortOrder, { optional: true })) sortOrder?: ESortOrder,
   ) {
     const result = await this.getOrdersService.getOrders({
       page,
@@ -73,6 +78,8 @@ export class OrdersController {
       couriers,
       senders,
       receivers,
+      sortBy,
+      sortOrder,
     });
 
     return result;
