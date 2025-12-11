@@ -20,15 +20,29 @@ export class ClientRegistrationService {
       throw new UserAlreadyExistsException();
     }
 
-    const passwordHash = await this.passwordService.generatePasswordHash(password);
+    const [addedByOtherUser, passwordHash] = await Promise.all([
+      this.prismaService.userClient.findFirst({ where: { phone } }),
+      this.passwordService.generatePasswordHash(password),
+    ]);
 
-    await this.prismaService.userClient.create({
-      data: {
-        email,
-        name,
-        phone,
-        passwordHash,
-      },
-    })
+    const data = {
+      email,
+      name,
+      phone,
+      passwordHash,
+    };
+
+    if (addedByOtherUser) {
+      await this.prismaService.userClient.update({
+        where: {
+          id: addedByOtherUser.id,
+        },
+        data,
+      })
+    } else {
+      await this.prismaService.userClient.create({
+        data,
+      });
+    }
   }
 }
