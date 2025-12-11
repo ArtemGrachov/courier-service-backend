@@ -18,7 +18,8 @@ export class AuthUuidService {
   }
 
   public update(key: AuthUuidKey) {
-    const uuid = crypto.randomBytes(32).toString('hex');
+    // TODO to remove, changed for debugging purposes
+    const uuid = 'ABDEF'; // crypto.randomBytes(32).toString('hex');
     this._map.set(key, uuid);
     return uuid;
   }

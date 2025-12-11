@@ -10,11 +10,17 @@ export class CourierAuthUserService extends AbstractUserService {
   }
 
   public async userByEmail(email: string) {
-    return this.prismaService.userCourier.findUnique({ where: { email } });
+    return this.prismaService.userCourier.findUnique({
+      where: { email },
+      omit: { passwordHash: false },
+    });
   }
 
   public async userById(id: number) {
-    return this.prismaService.userCourier.findUnique({ where: { id } });
+    return this.prismaService.userCourier.findUnique({
+      where: { id },
+      omit: { passwordHash: false },
+    });
   }
 
   public async updatePassword(id: number, passwordHash: string) {
