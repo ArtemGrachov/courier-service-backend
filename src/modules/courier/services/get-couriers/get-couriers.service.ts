@@ -38,19 +38,29 @@ export class GetCouriersService {
     }
     */
 
-    const items = await this.prismaService.userCourier.findMany({
+    const query = {
       skip,
       take: itemsPerPage,
       where,
       orderBy,
-    });
+    }
+
+    const [items, totalItems] = await this.prismaService.$transaction([
+      this.prismaService.userCourier.findMany(query),
+      this.prismaService.userCourier.count(query),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     return {
       items,
       pagination: {
         page,
         itemsPerPage,
+        totalItems,
+        totalPages,
       },
     };
   }
 }
+
