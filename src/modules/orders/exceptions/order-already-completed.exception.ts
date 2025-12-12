@@ -1,8 +1,16 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { ApiErrorResponse } from 'src/responses/response';
 
-export class OrderAlreadyCompletedException extends HttpException {
-  constructor() {
-    super('ORDER_ALREADY_COMPLETED', HttpStatus.BAD_REQUEST);
+export class OrderAlreadyCompletedException extends ApiErrorResponse {
+  constructor(orderId: number) {
+    super(
+      HttpStatus.BAD_REQUEST,
+      'ORDER_ALREADY_COMPLETED',
+      'Order "${orderId}" is already completed',
+      {
+        orderId,
+      },
+    );
   }
 }
 

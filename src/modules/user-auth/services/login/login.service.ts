@@ -18,13 +18,13 @@ export class LoginService {
     const user = await this.userService.userByEmail(email);
 
     if (!user) {
-      throw new IncorrectEmailOrPasswordException();
+      throw new IncorrectEmailOrPasswordException(email);
     }
 
     const isPasswordValid = await this.passwordService.comparePassword(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      throw new IncorrectEmailOrPasswordException();
+      throw new IncorrectEmailOrPasswordException(email);
     }
 
     return {

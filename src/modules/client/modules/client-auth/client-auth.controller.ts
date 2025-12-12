@@ -46,8 +46,11 @@ export class ClientAuthController {
     await this.forgotPasswordService.forgotPassword(email);
 
     return {
-      message: 'FORGOT_PASSWORD_LINK_SENT',
-      email,
+      type: 'FORGOT_PASSWORD_LINK_SENT',
+      message: `Forgot passwor link sent to ${email}`,
+      details: {
+        email,
+      },
     };
   }
 
@@ -69,6 +72,8 @@ export class ClientAuthController {
     const user = await this.changePasswordService.changePassword(requestUser.id, password);
 
     return {
+      type: 'PASSWORD_CHANGED_SUCCESSFULLY',
+      message: `Password has been changed successfully`,
       token: await this.authTokenService.authToken(user),
     };
   }

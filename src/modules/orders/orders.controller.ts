@@ -127,7 +127,7 @@ export class OrdersController {
     }
 
     if (order.courierId != null) {
-      throw new OrderAlreadyAcceptedException();
+      throw new OrderAlreadyAcceptedException(order.id);
     }
 
     await this.acceptOrderService.acceptOrder(requestUser, id);
@@ -159,15 +159,15 @@ export class OrdersController {
     }
 
     if (order.courierId == null) {
-      throw new OrderNotAcceptedException();
+      throw new OrderNotAcceptedException(order.id);
     }
 
     if (order.status === EOrderStatus.COMPLETED) {
-      throw new OrderAlreadyCompletedException();
+      throw new OrderAlreadyCompletedException(order.id);
     }
 
     if (order.status !== EOrderStatus.PROCESSING) {
-      throw new OrderNotProcessingException();
+      throw new OrderNotProcessingException(order.id);
     }
 
     await this.completeOrderService.completeOrder(requestUser, id, senderRating, receiverRating);

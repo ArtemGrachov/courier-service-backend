@@ -1,8 +1,14 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { ApiErrorResponse } from 'src/responses/response';
 
-export class OrderAlreadyAcceptedException extends HttpException {
-  constructor() {
-    super('ORDER_ALREADY_ACCEPTED', HttpStatus.BAD_REQUEST);
+export class OrderAlreadyAcceptedException extends ApiErrorResponse {
+  constructor(orderId: number) {
+    super(
+      HttpStatus.BAD_REQUEST,
+      'ORDER_ALREADY_ACCEPTED',
+      'Order "${orderId}" is already accepted',
+      { orderId },
+    );
   }
 }
 

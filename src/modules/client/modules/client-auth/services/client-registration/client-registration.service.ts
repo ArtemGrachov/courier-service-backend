@@ -17,7 +17,7 @@ export class ClientRegistrationService {
     const existingUser = await this.prismaService.userClient.findUnique({ where: { email } });
 
     if (existingUser) {
-      throw new UserAlreadyExistsException();
+      throw new UserAlreadyExistsException(email);
     }
 
     const passwordHash = await this.passwordService.generatePasswordHash(password);
