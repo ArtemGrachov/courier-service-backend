@@ -53,17 +53,19 @@ model Order {
 }
 
 model UserCourier {
-  id           Int           @id @default(autoincrement())
-  email        String        @unique
-  passwordHash String
-  status       String        @default("offline")
-  name         String
-  phone        String
-  position     Position      @relation(fields: [positionId], references: [id])
-  positionId   Int
-  clientRates  ClientRate[]
-  courierRates CourierRate[]
-  orders       Order[]
+  id                   Int           @id @default(autoincrement())
+  email                String        @unique
+  passwordHash         String
+  status               String        @default("offline")
+  name                 String
+  phone                String
+  position             Position      @relation(fields: [positionId], references: [id])
+  positionId           Int
+  clientRates          ClientRate[]
+  courierRates         CourierRate[]
+  orders               Order[]
+  activeOrdersCount    Int           @default(0)
+  completedOrdersCount Int           @default(0)
 }
 
 model UserClient {
