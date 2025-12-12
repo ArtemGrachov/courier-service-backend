@@ -29,14 +29,11 @@ export class GetCouriersService {
       };
     }
 
-    // TODO aggregaed data
-    /*
     if (sortBy) {
       orderBy = {
         [sortBy]: sortOrder ?? ESortOrder.DESC,
       };
     }
-    */
 
     const query = {
       skip,
