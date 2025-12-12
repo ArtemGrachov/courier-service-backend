@@ -1,8 +1,16 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { ApiErrorResponse } from 'src/responses/response';
 
-export class OrderNotAcceptedException extends HttpException {
-  constructor() {
-    super('ORDER_NOT_ACCEPTED', HttpStatus.BAD_REQUEST);
+export class OrderNotAcceptedException extends ApiErrorResponse {
+  constructor(orderId: number) {
+    super(
+      HttpStatus.BAD_REQUEST,
+      'ORDER_NOT_ACCEPTED',
+      `Order "${orderId}" is not accepted`,
+      {
+        orderId,
+      },
+    );
   }
 }
 

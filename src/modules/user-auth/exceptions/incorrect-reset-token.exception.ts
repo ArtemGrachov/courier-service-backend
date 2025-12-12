@@ -1,8 +1,13 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { ApiErrorResponse } from 'src/responses/response';
 
-export class IncorrectResetTokenException extends HttpException {
+export class IncorrectResetTokenException extends ApiErrorResponse {
   constructor() {
-    super('INCORRECT_RESET_TOKEN', HttpStatus.UNPROCESSABLE_ENTITY);
+    super(
+      HttpStatus.UNPROCESSABLE_ENTITY,
+      'INCORRECT_RESET_TOKEN',
+      'Incorrect reset token',
+    );
   }
 }
 
