@@ -1,12 +1,12 @@
-import { HttpException } from "@nestjs/common";
+import { HttpException, HttpStatus } from "@nestjs/common";
 
 export class ApiResponse<T = undefined> {
   constructor(
-    public type: 'error' | 'success' = 'success',
-    public statusCode: number,
-    public code: string,
     public message: string,
+    public code: string,
     public details: T | undefined = undefined,
+    public type: 'error' | 'success' = 'success',
+    public statusCode: number = HttpStatus.OK,
   ) {}
 }
 

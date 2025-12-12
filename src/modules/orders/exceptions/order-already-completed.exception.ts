@@ -6,7 +6,7 @@ export class OrderAlreadyCompletedException extends ApiErrorResponse {
     super(
       HttpStatus.BAD_REQUEST,
       'ORDER_ALREADY_COMPLETED',
-      'Order "${orderId}" is already completed',
+      `Order "${orderId}" is already completed`,
       {
         orderId,
       },

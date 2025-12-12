@@ -6,7 +6,7 @@ export class OrderAlreadyAcceptedException extends ApiErrorResponse {
     super(
       HttpStatus.BAD_REQUEST,
       'ORDER_ALREADY_ACCEPTED',
-      'Order "${orderId}" is already accepted',
+      `Order "${orderId}" is already accepted`,
       { orderId },
     );
   }

@@ -3,6 +3,8 @@ import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 
+import { ApiResponse } from 'src/responses/response';
+
 import { Roles } from 'src/modules/auth/decorators/role.decorator';
 
 import { ForgotPasswordService } from 'src/modules/user-auth/services/forgot-password/forgot-password.service';
@@ -33,7 +35,11 @@ export class CourierAuthController {
   @HttpCode(200)
   @UsePipes(new ValidationPipe({ transform: true }))
   public async login(@Body() { email, password }: LoginDto) {
-    return this.loginService.login(email, password);
+    return new ApiResponse(
+      `Logged in successfully`,
+      'LOG_IN_SUCCESS',
+      await this.loginService.login(email, password),
+    );
   }
 
   @Post('forgot-password')
@@ -42,13 +48,11 @@ export class CourierAuthController {
   public async forgotPassword(@Body() { email }: ForgotPasswordDto) {
     await this.forgotPasswordService.forgotPassword(email);
 
-    return {
-      type: 'FORGOT_PASSWORD_LINK_SENT',
-      message: `Forgot passwor link sent to ${email}`,
-      details: {
-        email,
-      },
-    };
+    return new ApiResponse(
+      `Forgot password link sent to ${email}`,
+      'FORGOT_PASSWORD_LINK_SENT',
+      { email },
+    );
   }
 
   @Post('reset-password')
@@ -56,6 +60,11 @@ export class CourierAuthController {
   @UsePipes(new ValidationPipe({ transform: true }))
   public async resetPassword(@Body() { token, password }: ResetPasswordDto) {
     await this.resetPasswordService.resetPassword(token, password);
+
+    return new ApiResponse(
+      'Password reset successfully',
+      'PASSWORD_RESET_SUCCESSFULLY',
+    );
   }
 
   @Post('change-password')
@@ -68,10 +77,12 @@ export class CourierAuthController {
     const requestUser = req['user'] as IRequstUser;
     const user = await this.changePasswordService.changePassword(requestUser.id, password);
 
-    return {
-      type: 'PASSWORD_CHANGED_SUCCESSFULLY',
-      message: `Password has been changed successfully`,
-      token: await this.authTokenService.authToken(user),
-    };
+    return new ApiResponse(
+      `Password has been changed successfully`,
+      'PASSWORD_CHANGED_SUCCESSFULLY',
+      {
+        token: await this.authTokenService.authToken(user),
+      },
+    );
   }
 }

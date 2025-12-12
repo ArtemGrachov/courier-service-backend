@@ -3,6 +3,8 @@ import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 
+import { ApiResponse } from 'src/responses/response';
+
 import { Roles } from 'src/modules/auth/decorators/role.decorator';
 
 import { ClientRegistrationService } from './services/client-registration/client-registration.service';
@@ -36,7 +38,11 @@ export class ClientAuthController {
   @HttpCode(200)
   @UsePipes(new ValidationPipe({ transform: true }))
   public async login(@Body() { email, password }: LoginDto) {
-    return this.loginService.login(email, password);
+    return new ApiResponse(
+      `Logged in successfully`,
+      'LOG_IN_SUCCESS',
+      await this.loginService.login(email, password),
+    );
   }
 
   @Post('forgot-password')
@@ -45,13 +51,11 @@ export class ClientAuthController {
   public async forgotPassword(@Body() { email }: ForgotPasswordDto) {
     await this.forgotPasswordService.forgotPassword(email);
 
-    return {
-      type: 'FORGOT_PASSWORD_LINK_SENT',
-      message: `Forgot passwor link sent to ${email}`,
-      details: {
-        email,
-      },
-    };
+    return new ApiResponse(
+      `Forgot password link sent to ${email}`,
+      'FORGOT_PASSWORD_LINK_SENT',
+      { email },
+    );
   }
 
   @Post('reset-password')
@@ -59,6 +63,11 @@ export class ClientAuthController {
   @UsePipes(new ValidationPipe({ transform: true }))
   public async resetPassword(@Body() { token, password }: ResetPasswordDto) {
     await this.resetPasswordService.resetPassword(token, password);
+
+    return new ApiResponse(
+      'Password reset successfully',
+      'PASSWORD_RESET_SUCCESSFULLY',
+    );
   }
 
   @Post('change-password')
@@ -71,11 +80,13 @@ export class ClientAuthController {
     const requestUser = req['user'] as IRequstUser;
     const user = await this.changePasswordService.changePassword(requestUser.id, password);
 
-    return {
-      type: 'PASSWORD_CHANGED_SUCCESSFULLY',
-      message: `Password has been changed successfully`,
-      token: await this.authTokenService.authToken(user),
-    };
+    return new ApiResponse(
+      `Password has been changed successfully`,
+      'PASSWORD_CHANGED_SUCCESSFULLY',
+      {
+        token: await this.authTokenService.authToken(user),
+      },
+    );
   }
 
   @Post('registration')
@@ -84,8 +95,9 @@ export class ClientAuthController {
   public async registration(@Body() payload: RegistrationDto) {
     await this.clientRegistrationService.registration(payload);
 
-    return {
-      message: 'CLIENT_REGISTERED_SUCCESSFULLY',
-    };
+    return new ApiResponse(
+      `Client reigstered successfully`,
+      'CLIENT_REGISTERED_SUCCESSFULLY',
+    );
   }
 }

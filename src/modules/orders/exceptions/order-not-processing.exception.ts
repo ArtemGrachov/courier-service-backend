@@ -6,7 +6,7 @@ export class OrderNotProcessingException extends ApiErrorResponse {
     super(
       HttpStatus.BAD_REQUEST,
       'ORDER_NOT_PROCESSING',
-      'Order "${orderId}" is not processing',
+      `Order "${orderId}" is not processing`,
       {
         orderId,
       },

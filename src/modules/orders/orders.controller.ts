@@ -23,6 +23,8 @@ import { EOrdersSortBy } from './services/get-orders/constants';
 
 import { ParseIntArrayPipe } from 'src/pipes/parse-int-array/parse-int-array.pipe';
 
+import { ApiResponse } from 'src/responses/response';
+
 import { Roles } from '../auth/decorators/role.decorator';
 
 import { CreateOrderService } from './services/create-order/create-order.service';
@@ -59,7 +61,14 @@ export class OrdersController {
     @Body() payload: CreateOrderDto,
   ) {
     const requestUser = req['user'] as IRequstUser;
-    return this.createOrderService.createOrder(requestUser.id, payload);
+
+    const order = await this.createOrderService.createOrder(requestUser.id, payload);
+
+    return new ApiResponse(
+      'ORDER_CREATED_SUCCESSFULLY',
+      'Order created successfully',
+      { order },
+    );
   }
 
   @Get('')
@@ -132,9 +141,11 @@ export class OrdersController {
 
     await this.acceptOrderService.acceptOrder(requestUser, id);
 
-    return {
-      message: 'ORDER_ACCEPTED_SUCCESSFULLY',
-    };
+    return new ApiResponse(
+      'ORDER_ACCEPTED_SUCCESSFULLY',
+      `Order ${order.id} accepted successfully`,
+      { order },
+    );
   }
 
   @Patch(':id/complete')
@@ -172,9 +183,11 @@ export class OrdersController {
 
     await this.completeOrderService.completeOrder(requestUser, id, senderRating, receiverRating);
 
-    return {
-      message: 'ORDER_COMPLETED_SUCCESSFULLY',
-    };
+    return new ApiResponse(
+      'ORDER_COMPLETED_SUCCESSFULLY',
+      `Order ${order.id} completed successfully`,
+      { order },
+    );
   }
 }
 

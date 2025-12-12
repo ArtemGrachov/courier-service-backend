@@ -6,7 +6,7 @@ export class OrderNotAcceptedException extends ApiErrorResponse {
     super(
       HttpStatus.BAD_REQUEST,
       'ORDER_NOT_ACCEPTED',
-      'Order "${orderId}" is not accepted',
+      `Order "${orderId}" is not accepted`,
       {
         orderId,
       },
