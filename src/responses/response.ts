@@ -14,6 +14,7 @@ export class ApiErrorResponse<T = any> extends HttpException {
   constructor(statusCode: number, code: string, message: string, details: T | undefined = undefined) {
     super(
       {
+        type: 'error',
         statusCode,
         code,
         message,
