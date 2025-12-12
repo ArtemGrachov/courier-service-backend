@@ -11,15 +11,27 @@ export class AcceptOrderService {
   constructor(private prismaService: PrismaService) {}
 
   public async acceptOrder(requestUser: IRequstUser, id: number) {
-    await this.prismaService.order.update({
-      where: {
-        id,
-      },
-      data: {
-        courierId: requestUser.id,
-        status: EOrderStatus.PROCESSING,
-      },
-    });
+    await this.prismaService.$transaction([
+      this.prismaService.order.update({
+        where: {
+          id,
+        },
+        data: {
+          courierId: requestUser.id,
+          status: EOrderStatus.PROCESSING,
+        },
+      }),
+      this.prismaService.userCourier.update({
+        where: {
+          id: requestUser.id,
+        },
+        data: {
+          activeOrdersCount: {
+            increment: 1,
+          },
+        },
+      }),
+    ]);
   }
 }
 
