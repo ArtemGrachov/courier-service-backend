@@ -5,6 +5,7 @@ import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 import { UserCourierOrderByWithRelationInput, UserCourierWhereInput } from 'src/generated/prisma/models';
 import { IGetCouriersQuery } from './types';
+import { ECouriersSortBy } from './constants';
 
 @Injectable()
 export class GetCouriersService {
@@ -30,9 +31,28 @@ export class GetCouriersService {
     }
 
     if (sortBy) {
-      orderBy = {
-        [sortBy]: sortOrder ?? ESortOrder.DESC,
-      };
+      let sortKey: string | null = null;
+
+      switch (sortBy) {
+        case ECouriersSortBy.TOTAL_ORDERS: {
+          sortKey = 'totalOrdersCount';
+          break;
+        }
+        case ECouriersSortBy.ACTIVE_ORDERS: {
+          sortKey = 'activeOrdersCount';
+          break;
+        }
+        case ECouriersSortBy.COMPLETED_ORDERS: {
+          sortKey = 'completedOrdersCount';
+          break;
+        }
+      }
+
+      if (sortKey) {
+        orderBy = {
+          [sortKey]: sortOrder ?? ESortOrder.DESC,
+        };
+      }
     }
 
     const query = {
