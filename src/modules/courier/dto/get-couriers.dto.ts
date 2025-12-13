@@ -1,8 +1,11 @@
 import { IsEnum, IsNumber, IsOptional, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 import { ECourierStatus } from '../constants/courier-status';
 import { ECouriersSortBy } from '../services/get-couriers/constants';
 import { ESortOrder } from 'src/constants/sort';
+
+import { toArray } from 'src/utils/to-array';
 
 export class GetCouriersDto {
   @IsOptional()
@@ -16,7 +19,8 @@ export class GetCouriersDto {
   itemsPerPage: number = 10;
 
   @IsOptional()
-  @IsEnum(ECourierStatus)
+  @Transform(toArray)
+  @IsEnum(ECourierStatus, { each: true })
   status?: ECourierStatus[];
 
   @IsOptional()

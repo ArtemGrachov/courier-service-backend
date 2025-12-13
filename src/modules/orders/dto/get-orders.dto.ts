@@ -5,6 +5,8 @@ import { EOrderStatus } from '../constants/order';
 import { EOrdersSortBy } from '../services/get-orders/constants';
 import { ESortOrder } from 'src/constants/sort';
 
+import { toArray } from 'src/utils/to-array';
+
 export class GetOrdersDto {
   @IsOptional()
   @IsNumber()
@@ -18,24 +20,24 @@ export class GetOrdersDto {
 
   @IsOptional()
   @IsInt({ each: true })
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @Transform(toArray)
   @Type(() => Number)
   couriers?: number[];
 
   @IsOptional()
   @IsInt({ each: true })
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @Transform(toArray)
   @Type(() => Number)
   senders?: number[];
 
   @IsOptional()
   @IsInt({ each: true })
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @Transform(toArray)
   @Type(() => Number)
   receivers?: number[];
 
   @IsOptional()
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @Transform(toArray)
   @IsEnum(EOrderStatus, { each: true })
   status?: EOrderStatus[];
 
