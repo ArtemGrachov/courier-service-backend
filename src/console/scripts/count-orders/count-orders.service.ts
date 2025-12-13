@@ -15,6 +15,8 @@ export class CountOrdersService {
       },
     });
 
+    const totalMap = new Map<number, number>();
+
     for (let item of grouped) {
       if (item.courierId == null) {
         continue;
@@ -32,6 +34,9 @@ export class CountOrdersService {
           break;
         }
       }
+
+      data.totalOrdersCount = (totalMap.get(item.courierId) ?? 0) + item._count.id;
+      totalMap.set(item.courierId, data.totalOrdersCount);
 
       await this.prismaService.userCourier.update({
         where: {
