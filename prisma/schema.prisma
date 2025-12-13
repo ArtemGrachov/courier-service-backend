@@ -94,7 +94,6 @@ model ClientRate {
 }
 
 model CourierRate {
-  id        Int         @id @default(autoincrement())
   rating    Int
   client    UserClient  @relation(fields: [clientId], references: [id])
   clientId  Int
@@ -102,6 +101,8 @@ model CourierRate {
   courierId Int
   order     Order       @relation(fields: [orderId], references: [id])
   orderId   Int
+
+  @@id([clientId, courierId, orderId])
 }
 
 model ResetPasswordToken {
