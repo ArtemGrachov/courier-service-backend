@@ -21,13 +21,15 @@
     "execute": "node ./dist/src/console/run.js",
     "create-admin": "npm run execute create-admin",
     "update-admin": "npm run execute update-admin",
-    "delete-admin": "npm run execute delete-admin"
+    "delete-admin": "npm run execute delete-admin",
+    "count-orders": "npm run execute count-orders"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.2",
+    "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/adapter-better-sqlite3": "^7.0.1",
     "@prisma/client": "^7.0.1",

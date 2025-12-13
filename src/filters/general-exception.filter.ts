@@ -21,6 +21,8 @@ export class GeneralExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    console.error(exception);
+
     const responseBody = {
       type: 'error',
       statusCode: httpStatus,

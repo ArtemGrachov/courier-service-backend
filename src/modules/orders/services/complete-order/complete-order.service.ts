@@ -22,14 +22,29 @@ export class CompleteOrderService {
       throw new NotFoundException();
     }
 
-    await this.prismaService.order.update({
-      where: {
-        id,
-      },
-      data: {
-        status: EOrderStatus.COMPLETED,
-      },
-    });
+    await this.prismaService.$transaction([
+      this.prismaService.order.update({
+        where: {
+          id,
+        },
+        data: {
+          status: EOrderStatus.COMPLETED,
+        },
+      }),
+      this.prismaService.userCourier.update({
+        where: {
+          id: requestUser.id,
+        },
+        data: {
+          activeOrdersCount: {
+            decrement: 1,
+          },
+          completedOrdersCount: {
+            increment: 1,
+          },
+        },
+      }),
+    ]);
 
     await this.prismaService.clientRate.create({
       data: {

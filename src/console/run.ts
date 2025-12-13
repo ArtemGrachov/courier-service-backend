@@ -1,6 +1,7 @@
 const createAdminBootstrap = () => import('./scripts/create-admin/bootstrap.js').then(m => m.default.default);
 const updateAdminBootstrap = () => import('./scripts/update-admin/bootstrap.js').then(m => m.default.default);
 const deleteAdminBootstrap = () => import('./scripts/delete-admin/bootstrap.js').then(m => m.default.default);
+const countOrdersBootstrap = () => import('./scripts/count-orders/bootstrap.js').then(m => m.default.default);
 
 async function run() {
   const scriptName = process.argv[2];
@@ -17,6 +18,10 @@ async function run() {
     }
     case 'delete-admin': {
       scriptLoader = deleteAdminBootstrap;
+      break;
+    }
+    case 'count-orders': {
+      scriptLoader = countOrdersBootstrap;
       break;
     }
   }
