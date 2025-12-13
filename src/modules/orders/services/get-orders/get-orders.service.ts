@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 import { ESortOrder } from 'src/constants/sort';
+import { ERoles } from 'src/constants/auth';
 
-import { IGetOrdersQuery } from './types';
+import { GetOrdersDto } from '../../dto/get-orders.dto';
 import { OrderOrderByWithRelationInput, OrderWhereInput } from 'src/generated/prisma/models';
+import { IRequstUser } from 'src/types/auth/request-user';
 
 @Injectable()
 export class GetOrdersService {
@@ -12,15 +14,19 @@ export class GetOrdersService {
     private prismaService: PrismaService,
   ) {}
 
-  public async getOrders({
-    page,
-    itemsPerPage,
-    couriers,
-    senders,
-    receivers,
-    sortBy,
-    sortOrder,
-  }: IGetOrdersQuery) {
+  public async getOrders(
+    user: IRequstUser,
+    {
+      page,
+      itemsPerPage,
+      couriers,
+      senders,
+      receivers,
+      status,
+      sortBy,
+      sortOrder,
+    }: GetOrdersDto,
+  ) {
     const skip = (page - 1) * itemsPerPage;
 
     let orderBy: OrderOrderByWithRelationInput | undefined;
@@ -44,24 +50,70 @@ export class GetOrdersService {
       };
     }
 
+    if (status?.length) {
+      where.status = {
+        in: status,
+      };
+    }
+
     if (sortBy) {
       orderBy = {
         [sortBy]: sortOrder ?? ESortOrder.DESC,
       };
     }
 
-    const items = await this.prismaService.order.findMany({
+    const query = {
       skip,
       take: itemsPerPage,
       where,
       orderBy,
-    });
+    };
+
+    if (user) {
+      let userQuery: OrderWhereInput | null = null;
+
+      switch (user.role) {
+        case ERoles.CLIENT: {
+          userQuery = {
+            OR: [
+              { senderId: user.id },
+              { receiverId: user.id },
+            ],
+          };
+          break;
+        }
+        case ERoles.COURIER: {
+          userQuery = {
+            courierId: user.id,
+          };
+          break;
+        }
+      }
+
+      if (userQuery) {
+        query.where = {
+          AND: [
+            query.where,
+            userQuery,
+          ],
+        };
+      }
+    }
+
+    const [items, totalItems] = await this.prismaService.$transaction([
+      this.prismaService.order.findMany(query),
+      this.prismaService.order.count(query),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     return {
       items,
       pagination: {
         page,
         itemsPerPage,
+        totalItems,
+        totalPages,
       },
     };
   }

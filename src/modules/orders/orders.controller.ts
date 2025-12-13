@@ -12,16 +12,11 @@ import {
   NotFoundException,
   Patch,
   ForbiddenException,
-  ParseEnumPipe,
 } from '@nestjs/common';
-import type { Request as ExpressRequest } from 'express';
+import { request, type Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 import { EOrderStatus } from './constants/order';
-import { ESortOrder } from 'src/constants/sort';
-import { EOrdersSortBy } from './services/get-orders/constants';
-
-import { ParseIntArrayPipe } from 'src/pipes/parse-int-array/parse-int-array.pipe';
 
 import { ApiResponse } from 'src/responses/response';
 
@@ -35,6 +30,7 @@ import { CompleteOrderService } from './services/complete-order/complete-order.s
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CompleteOrderDto } from './dto/complete-order.dto';
+import { GetOrdersDto } from './dto/get-orders.dto';
 
 import type { IRequstUser } from 'src/types/auth/request-user';
 
@@ -72,24 +68,18 @@ export class OrdersController {
   }
 
   @Get('')
+  @Roles([ERoles.ADMIN, ERoles.COURIER, ERoles.CLIENT])
   public async getOrders(
-    @Query('page', new ParseIntPipe({ optional: true })) page: number = 1,
-    @Query('itemsPerPage', new ParseIntPipe({ optional: true })) itemsPerPage: number = 10,
-    @Query('couriers', new ParseIntArrayPipe({ optional: true })) couriers?: number[],
-    @Query('senders', new ParseIntArrayPipe({ optional: true })) senders?: number[],
-    @Query('receivers', new ParseIntArrayPipe({ optional: true })) receivers?: number[],
-    @Query('sortBy', new ParseEnumPipe(EOrdersSortBy, { optional: true })) sortBy?: EOrdersSortBy,
-    @Query('sortOrder', new ParseEnumPipe(ESortOrder, { optional: true })) sortOrder?: ESortOrder,
+    @Request() req: ExpressRequest,
+    @Query(new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+      forbidNonWhitelisted: true,
+    })) query: GetOrdersDto,
   ) {
-    const result = await this.getOrdersService.getOrders({
-      page,
-      itemsPerPage,
-      couriers,
-      senders,
-      receivers,
-      sortBy,
-      sortOrder,
-    });
+    const requestUser = req['user'] as IRequstUser;
+
+    const result = await this.getOrdersService.getOrders(requestUser, query);
 
     return result;
   }

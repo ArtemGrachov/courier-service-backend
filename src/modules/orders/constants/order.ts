@@ -1,4 +1,4 @@
-export const enum EOrderStatus {
+export enum EOrderStatus {
   ORDERED = 'ordered',
   PROCESSING = 'processing',
   COMPLETED = 'completed',
