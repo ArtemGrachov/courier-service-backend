@@ -13,7 +13,7 @@ import {
   Patch,
   ForbiddenException,
 } from '@nestjs/common';
-import type { Request as ExpressRequest } from 'express';
+import { request, type Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 import { EOrderStatus } from './constants/order';
@@ -68,32 +68,18 @@ export class OrdersController {
   }
 
   @Get('')
+  @Roles([ERoles.ADMIN, ERoles.COURIER, ERoles.CLIENT])
   public async getOrders(
+    @Request() req: ExpressRequest,
     @Query(new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
       forbidNonWhitelisted: true,
-    })) {
-      page,
-      itemsPerPage,
-      couriers,
-      senders,
-      receivers,
-      status,
-      sortBy,
-      sortOrder,
-    }: GetOrdersDto,
+    })) query: GetOrdersDto,
   ) {
-    const result = await this.getOrdersService.getOrders({
-      page,
-      itemsPerPage,
-      couriers,
-      senders,
-      receivers,
-      status,
-      sortBy,
-      sortOrder,
-    });
+    const requestUser = req['user'] as IRequstUser;
+
+    const result = await this.getOrdersService.getOrders(requestUser, query);
 
     return result;
   }

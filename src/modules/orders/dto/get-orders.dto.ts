@@ -18,16 +18,19 @@ export class GetOrdersDto {
 
   @IsOptional()
   @IsInt({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => Number)
   couriers?: number[];
 
   @IsOptional()
   @IsInt({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => Number)
   senders?: number[];
 
   @IsOptional()
   @IsInt({ each: true })
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => Number)
   receivers?: number[];
 

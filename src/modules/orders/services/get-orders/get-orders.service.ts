@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 import { ESortOrder } from 'src/constants/sort';
+import { ERoles } from 'src/constants/auth';
 
 import { GetOrdersDto } from '../../dto/get-orders.dto';
 import { OrderOrderByWithRelationInput, OrderWhereInput } from 'src/generated/prisma/models';
+import { IRequstUser } from 'src/types/auth/request-user';
 
 @Injectable()
 export class GetOrdersService {
@@ -12,16 +14,19 @@ export class GetOrdersService {
     private prismaService: PrismaService,
   ) {}
 
-  public async getOrders({
-    page,
-    itemsPerPage,
-    couriers,
-    senders,
-    status,
-    receivers,
-    sortBy,
-    sortOrder,
-  }: GetOrdersDto) {
+  public async getOrders(
+    user: IRequstUser,
+    {
+      page,
+      itemsPerPage,
+      couriers,
+      senders,
+      receivers,
+      status,
+      sortBy,
+      sortOrder,
+    }: GetOrdersDto,
+  ) {
     const skip = (page - 1) * itemsPerPage;
 
     let orderBy: OrderOrderByWithRelationInput | undefined;
@@ -63,6 +68,37 @@ export class GetOrdersService {
       where,
       orderBy,
     };
+
+    if (user) {
+      let userQuery: OrderWhereInput | null = null;
+
+      switch (user.role) {
+        case ERoles.CLIENT: {
+          userQuery = {
+            OR: [
+              { senderId: user.id },
+              { receiverId: user.id },
+            ],
+          };
+          break;
+        }
+        case ERoles.COURIER: {
+          userQuery = {
+            courierId: user.id,
+          };
+          break;
+        }
+      }
+
+      if (userQuery) {
+        query.where = {
+          AND: [
+            query.where,
+            userQuery,
+          ],
+        };
+      }
+    }
 
     const [items, totalItems] = await this.prismaService.$transaction([
       this.prismaService.order.findMany(query),
