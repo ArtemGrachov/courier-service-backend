@@ -1,4 +1,17 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Request, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  Request,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+
 import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
@@ -6,14 +19,18 @@ import { ERoles } from 'src/constants/auth';
 import { CreateCourierService } from './services/create-courier/create-courier.service';
 import { GetCouriersService } from './services/get-couriers/get-couriers.service';
 import { UpdateCourierService } from './services/update-courier/update-courier.service';
+import { RateCourierService } from './services/rate-courier/rate-courier.service';
+import { PrismaService } from '../prisma/services/prisma.service';
 
 import { Roles } from '../auth/decorators/role.decorator';
 
 import { CreateCourierDto } from './dto/create-courier.dto';
 import { GetCouriersDto } from './dto/get-couriers.dto';
 import { UpdateCourierDto } from './dto/update-courier.dto';
+import { RateCourierDto } from './dto/rate-courier.dto';
 import { ApiResponse } from 'src/responses/response';
 import { IRequstUser } from 'src/types/auth/request-user';
+
 
 @Controller('courier')
 export class CourierController {
@@ -21,6 +38,7 @@ export class CourierController {
     private createCourierService: CreateCourierService,
     private getCouriersService: GetCouriersService,
     private updateCourierService: UpdateCourierService,
+    private rateCourierService: RateCourierService,
   ) {}
 
   @Get('')
@@ -62,8 +80,29 @@ export class CourierController {
     );
   }
 
+  @Post(':id/rate')
+  @Roles([ERoles.CLIENT])
+  @UsePipes(new ValidationPipe({ transform: true }))
+  public async rateCourier(
+    @Request() req: ExpressRequest,
+    @Param('id', new ParseIntPipe) courierId: number,
+    @Body() payload: RateCourierDto,
+  ) {
+    const requestUser = req['user'] as IRequstUser;
+    const clientId = requestUser.id;
+
+    await this.rateCourierService.validateRateCourier(clientId, courierId, payload);
+    await this.rateCourierService.rateCourier(clientId, courierId, payload);
+
+    return new ApiResponse(
+      'Client was rated successfully',
+      'CLIENT_RATED_SUCCESSFULLY',
+    );
+  }
+
   @Patch('self')
   @Roles([ERoles.COURIER])
+  @UsePipes(new ValidationPipe({ transform: true }))
   public async selfUpdateCourier(
     @Request() req: ExpressRequest,
     @Body() payload: UpdateCourierDto,
