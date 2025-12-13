@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Query, Request, UsePipes, ValidationPipe } from '@nestjs/common';
+import type { Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 
@@ -10,8 +11,9 @@ import { Roles } from '../auth/decorators/role.decorator';
 
 import { CreateCourierDto } from './dto/create-courier.dto';
 import { GetCouriersDto } from './dto/get-couriers.dto';
-import { ApiResponse } from 'src/responses/response';
 import { UpdateCourierDto } from './dto/update-courier.dto';
+import { ApiResponse } from 'src/responses/response';
+import { IRequstUser } from 'src/types/auth/request-user';
 
 @Controller('courier')
 export class CourierController {
@@ -60,6 +62,22 @@ export class CourierController {
     );
   }
 
+  @Patch('self')
+  @Roles([ERoles.COURIER])
+  public async selfUpdateCourier(
+    @Request() req: ExpressRequest,
+    @Body() payload: UpdateCourierDto,
+  ) {
+    const requestUser = req['user'] as IRequstUser;
+    const courier = await this.updateCourierService.updateCourier(requestUser.id, payload);
+
+    return new ApiResponse(
+      'You data was updated successfully',
+      'YOUR_DATA_UPDATED_SUCCESSFULLY',
+      { courier },
+    );
+  }
+
   @Patch(':id')
   @Roles([ERoles.ADMIN])
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -76,3 +94,4 @@ export class CourierController {
     );
   }
 }
+
