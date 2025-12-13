@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
@@ -20,7 +21,7 @@ import { CreateCourierService } from './services/create-courier/create-courier.s
 import { GetCouriersService } from './services/get-couriers/get-couriers.service';
 import { UpdateCourierService } from './services/update-courier/update-courier.service';
 import { RateCourierService } from './services/rate-courier/rate-courier.service';
-import { PrismaService } from '../prisma/services/prisma.service';
+import { GetCourierService } from './services/get-courier/get-courier.service';
 
 import { Roles } from '../auth/decorators/role.decorator';
 
@@ -39,6 +40,7 @@ export class CourierController {
     private getCouriersService: GetCouriersService,
     private updateCourierService: UpdateCourierService,
     private rateCourierService: RateCourierService,
+    private getCourierService: GetCourierService,
   ) {}
 
   @Get('')
@@ -78,6 +80,18 @@ export class CourierController {
       'COURIER_CREATED_SUCCESSFULLY',
       { courier },
     );
+  }
+
+  @Get(':id')
+  @Roles([ERoles.ADMIN])
+  public async getCourier(@Param('id', new ParseIntPipe) id: number) {
+    const courier = await this.getCourierService.getCourier(id);
+
+    if (!courier) {
+      throw new NotFoundException();
+    }
+
+    return courier;
   }
 
   @Post(':id/rate')
