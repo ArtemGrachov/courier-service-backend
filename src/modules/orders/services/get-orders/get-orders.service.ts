@@ -50,18 +50,27 @@ export class GetOrdersService {
       };
     }
 
-    const items = await this.prismaService.order.findMany({
+    const query = {
       skip,
       take: itemsPerPage,
       where,
       orderBy,
-    });
+    };
+
+    const [items, totalItems] = await this.prismaService.$transaction([
+      this.prismaService.order.findMany(query),
+      this.prismaService.order.count(query),
+    ]);
+
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
 
     return {
       items,
       pagination: {
         page,
         itemsPerPage,
+        totalItems,
+        totalPages,
       },
     };
   }
