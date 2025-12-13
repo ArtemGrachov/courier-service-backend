@@ -44,6 +44,32 @@ export class CompleteOrderService {
           },
         },
       }),
+      this.prismaService.userClient.update({
+        where: {
+          id: order.senderId,
+        },
+        data: {
+          activeOrdersCount: {
+            decrement: 1,
+          },
+          completedOrdersCount: {
+            increment: 1,
+          },
+        },
+      }),
+      this.prismaService.userClient.update({
+        where: {
+          id: order.receiverId,
+        },
+        data: {
+          activeOrdersCount: {
+            decrement: 1,
+          },
+          completedOrdersCount: {
+            increment: 1,
+          },
+        },
+      }),
     ]);
 
     await this.prismaService.clientRate.create({

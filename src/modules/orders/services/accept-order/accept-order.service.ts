@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { EOrderStatus } from '../../constants/order';
 
@@ -11,6 +11,12 @@ export class AcceptOrderService {
   constructor(private prismaService: PrismaService) {}
 
   public async acceptOrder(requestUser: IRequstUser, id: number) {
+    const order = await this.prismaService.order.findUnique({ where: { id } });
+
+    if (!order) {
+      throw new NotFoundException();
+    }
+
     await this.prismaService.$transaction([
       this.prismaService.order.update({
         where: {
