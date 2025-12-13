@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
-// import { ESortOrder } from 'src/constants/sort';
+import { ESortOrder } from 'src/constants/sort';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
-// import { EClientsSortBy } from './constants';
+import { EClientsSortBy } from './constants';
 
 import { GetClientsDto } from '../../dto/get-clients.dto';
 import { UserClientOrderByWithRelationInput, UserClientWhereInput } from 'src/generated/prisma/models';
@@ -17,9 +17,9 @@ export class GetClientsService {
     itemsPerPage,
     /*
     phone,
+    */
     sortBy,
     sortOrder,
-    */
   }: GetClientsDto) {
 
     const skip = (page - 1) * itemsPerPage;
@@ -27,8 +27,6 @@ export class GetClientsService {
     let orderBy: UserClientOrderByWithRelationInput | undefined;
     let where: UserClientWhereInput = {};
 
-    /*
-    TODO Extend client model with appropriate fields
     if (sortBy) {
       let sortKey: string | null = null;
 
@@ -53,7 +51,6 @@ export class GetClientsService {
         };
       }
     }
-    */
 
     const query = {
       skip,
