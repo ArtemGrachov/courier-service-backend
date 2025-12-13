@@ -8,11 +8,12 @@ import { CreateCourierService } from './services/create-courier/create-courier.s
 
 import { CourierController } from './courier.controller';
 import { GetCouriersService } from './services/get-couriers/get-couriers.service';
+import { UpdateCourierService } from './services/update-courier/update-courier.service';
 
 @Module({
   imports: [CourierAuthModule, PasswordModule, PrismaModule],
   controllers: [CourierController],
-  providers: [CreateCourierService, GetCouriersService],
+  providers: [CreateCourierService, GetCouriersService, UpdateCourierService],
 })
 export class CourierModule {}
 
