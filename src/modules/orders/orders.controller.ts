@@ -79,6 +79,7 @@ export class OrdersController {
       couriers,
       senders,
       receivers,
+      status,
       sortBy,
       sortOrder,
     }: GetOrdersDto,
@@ -89,6 +90,7 @@ export class OrdersController {
       couriers,
       senders,
       receivers,
+      status,
       sortBy,
       sortOrder,
     });

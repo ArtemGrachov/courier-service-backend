@@ -3,7 +3,7 @@ import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 import { ESortOrder } from 'src/constants/sort';
 
-import { IGetOrdersQuery } from './types';
+import { GetOrdersDto } from '../../dto/get-orders.dto';
 import { OrderOrderByWithRelationInput, OrderWhereInput } from 'src/generated/prisma/models';
 
 @Injectable()
@@ -17,10 +17,11 @@ export class GetOrdersService {
     itemsPerPage,
     couriers,
     senders,
+    status,
     receivers,
     sortBy,
     sortOrder,
-  }: IGetOrdersQuery) {
+  }: GetOrdersDto) {
     const skip = (page - 1) * itemsPerPage;
 
     let orderBy: OrderOrderByWithRelationInput | undefined;
@@ -41,6 +42,12 @@ export class GetOrdersService {
     if (receivers?.length) {
       where.receiverId = {
         in: receivers,
+      };
+    }
+
+    if (status?.length) {
+      where.status = {
+        in: status,
       };
     }
 

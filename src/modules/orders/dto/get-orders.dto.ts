@@ -1,5 +1,5 @@
 import { IsEnum, IsInt, IsNumber, IsOptional, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 import { EOrderStatus } from '../constants/order';
 import { EOrdersSortBy } from '../services/get-orders/constants';
@@ -32,7 +32,8 @@ export class GetOrdersDto {
   receivers?: number[];
 
   @IsOptional()
-  @IsEnum(EOrderStatus)
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @IsEnum(EOrderStatus, { each: true })
   status?: EOrderStatus[];
 
   @IsOptional()
