@@ -7,6 +7,7 @@ import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { RateCourierDto } from '../../dto/rate-courier.dto';
 import { OrderWrongCourierException } from '../../exceptions/order-wrong-courier.exception';
 import { OrderNotCompletedException } from '../../exceptions/order-not-completed.exception';
+import { addRating } from 'src/utils/add-rating';
 
 @Injectable()
 export class RateCourierService {
@@ -48,10 +49,7 @@ export class RateCourierService {
     }
 
     const rating = payload.rating;
-    const currentRating = courier.rating ?? 0;
-    const ratingsCount = courier.ratingCount ?? 0;
-    const newCount = ratingsCount + 1;
-    const newRating = ((currentRating * ratingsCount) + rating) / newCount;
+    const { averageRating, count } = addRating(courier.rating ?? 0, courier.ratingCount ?? 0, rating);
 
     await this.prismaService.$transaction(async tx => {
       await tx.courierRate.create({
@@ -59,7 +57,7 @@ export class RateCourierService {
           clientId,
           courierId,
           orderId,
-          rating: payload.rating,
+          rating,
         },
       });
 
@@ -68,8 +66,8 @@ export class RateCourierService {
           id: courierId,
         },
         data: {
-          rating: newRating,
-          ratingCount: newCount,
+          rating: averageRating,
+          ratingCount: count,
         },
       });
     });

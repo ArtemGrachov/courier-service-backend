@@ -6,6 +6,8 @@ import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 import type { IRequstUser } from 'src/types/auth/request-user';
 
+import { addRating } from 'src/utils/add-rating';
+
 @Injectable()
 export class CompleteOrderService {
   constructor(private prismaService: PrismaService) {}
@@ -22,16 +24,17 @@ export class CompleteOrderService {
       throw new NotFoundException();
     }
 
-    await this.prismaService.$transaction([
-      this.prismaService.order.update({
+    await this.prismaService.$transaction(async tx => {
+      await tx.order.update({
         where: {
           id,
         },
         data: {
           status: EOrderStatus.COMPLETED,
         },
-      }),
-      this.prismaService.userCourier.update({
+      });
+
+      await tx.userCourier.update({
         where: {
           id: requestUser.id,
         },
@@ -43,8 +46,9 @@ export class CompleteOrderService {
             increment: 1,
           },
         },
-      }),
-      this.prismaService.userClient.update({
+      });
+
+      await tx.userClient.update({
         where: {
           id: order.senderId,
         },
@@ -56,8 +60,9 @@ export class CompleteOrderService {
             increment: 1,
           },
         },
-      }),
-      this.prismaService.userClient.update({
+      });
+
+      await tx.userClient.update({
         where: {
           id: order.receiverId,
         },
@@ -69,25 +74,63 @@ export class CompleteOrderService {
             increment: 1,
           },
         },
-      }),
-    ]);
+      });
 
-    await this.prismaService.clientRate.create({
-      data: {
-        orderId: id,
-        rating: senderRating,
-        clientId: order?.senderId,
-        courierId: requestUser.id,
-      },
-    });
+      await tx.clientRate.create({
+        data: {
+          orderId: id,
+          rating: senderRating,
+          clientId: order.senderId,
+          courierId: requestUser.id,
+        },
+      });
 
-    await this.prismaService.clientRate.create({
-      data: {
-        orderId: id,
-        rating: receiverRating,
-        clientId: order?.receiverId,
-        courierId: requestUser.id,
-      },
+      await tx.clientRate.create({
+        data: {
+          orderId: id,
+          rating: receiverRating,
+          clientId: order.receiverId,
+          courierId: requestUser.id,
+        },
+      });
+
+      const sender = await tx.userClient.findUnique({
+        where: {
+          id: order.senderId,
+        },
+      });
+
+      const receiver = await tx.userClient.findUnique({
+        where: {
+          id: order.receiverId,
+        },
+      });
+
+      if (sender) {
+        const { averageRating, count } = addRating(sender.rating ?? 0, sender.ratingCount ?? 0, senderRating);
+        await tx.userClient.update({
+          where: {
+            id: order.senderId,
+          },
+          data: {
+            rating: averageRating,
+            ratingCount: count,
+          },
+        });
+      }
+
+      if (receiver) {
+        const { averageRating, count } = addRating(receiver.rating ?? 0, receiver.ratingCount ?? 0, receiverRating);
+        await tx.userClient.update({
+          where: {
+            id: order.receiverId,
+          },
+          data: {
+            rating: averageRating,
+            ratingCount: count,
+          },
+        });
+      }
     });
   }
 }
