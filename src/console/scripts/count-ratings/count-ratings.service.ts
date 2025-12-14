@@ -11,15 +11,20 @@ export class CountRatingsService {
       _avg: {
         rating: true,
       },
+      _count: {
+        _all: true,
+      },
     })
 
     for (let item of ratings) {
+      console.log(item);
       await this.prismaService.userCourier.update({
         where: {
           id: item.courierId,
         },
         data: {
           rating: item._avg.rating,
+          ratingCount: item._count._all,
         },
       });
     }
@@ -31,6 +36,9 @@ export class CountRatingsService {
       _avg: {
         rating: true,
       },
+      _count: {
+        _all: true,
+      },
     })
 
     for (let item of ratings) {
@@ -40,6 +48,7 @@ export class CountRatingsService {
         },
         data: {
           rating: item._avg.rating,
+          ratingCount: item._count._all,
         },
       });
     }
