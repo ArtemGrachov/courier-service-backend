@@ -17,7 +17,6 @@ export class CountRatingsService {
     })
 
     for (let item of ratings) {
-      console.log(item);
       await this.prismaService.userCourier.update({
         where: {
           id: item.courierId,

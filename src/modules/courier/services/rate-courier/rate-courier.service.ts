@@ -32,19 +32,46 @@ export class RateCourierService {
     if (order.status !== EOrderStatus.COMPLETED) {
       throw new OrderNotCompletedException(orderId);
     }
-
   }
 
   public async rateCourier(clientId: number, courierId: number, payload: RateCourierDto) {
     const orderId = payload.orderId;
 
-    await this.prismaService.courierRate.create({
-      data: {
-        clientId,
-        courierId,
-        orderId,
-        rating: payload.rating,
+    const courier = await this.prismaService.userCourier.findUnique({
+      where: {
+        id: courierId,
       },
+    });
+
+    if (!courier) {
+      throw new NotFoundException();
+    }
+
+    const rating = payload.rating;
+    const currentRating = courier.rating ?? 0;
+    const ratingsCount = courier.ratingCount ?? 0;
+    const newCount = ratingsCount + 1;
+    const newRating = ((currentRating * ratingsCount) + rating) / newCount;
+
+    await this.prismaService.$transaction(async tx => {
+      await tx.courierRate.create({
+        data: {
+          clientId,
+          courierId,
+          orderId,
+          rating: payload.rating,
+        },
+      });
+
+      await tx.userCourier.update({
+        where: {
+          id: courierId,
+        },
+        data: {
+          rating: newRating,
+          ratingCount: newCount,
+        },
+      });
     });
   }
 }
