@@ -22,7 +22,8 @@
     "create-admin": "npm run execute create-admin",
     "update-admin": "npm run execute update-admin",
     "delete-admin": "npm run execute delete-admin",
-    "count-orders": "npm run execute count-orders"
+    "count-orders": "npm run execute count-orders",
+    "count-ratings": "npm run execute count-ratings"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
