@@ -7,5 +7,6 @@ export default async function() {
   const countRatingsService = application.get(CountRatingsService);
 
   await countRatingsService.countCourierRatings();
+  await countRatingsService.countClientRatings();
 }
 

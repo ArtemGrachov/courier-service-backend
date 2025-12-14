@@ -24,5 +24,25 @@ export class CountRatingsService {
       });
     }
   }
+
+  public async countClientRatings() {
+    const ratings = await this.prismaService.clientRate.groupBy({
+      by: ['clientId'],
+      _avg: {
+        rating: true,
+      },
+    })
+
+    for (let item of ratings) {
+      await this.prismaService.userClient.update({
+        where: {
+          id: item.clientId,
+        },
+        data: {
+          rating: item._avg.rating,
+        },
+      });
+    }
+  }
 }
 
