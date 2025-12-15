@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 
+import { ECouriersSortBy } from './constants';
 import { ESortOrder } from 'src/constants/sort';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 import { UserCourierOrderByWithRelationInput, UserCourierWhereInput } from 'src/generated/prisma/models';
 import { IGetCouriersQuery } from './types';
-import { ECouriersSortBy } from './constants';
 
 @Injectable()
 export class GetCouriersService {
@@ -46,6 +46,10 @@ export class GetCouriersService {
           sortKey = 'completedOrdersCount';
           break;
         }
+        case ECouriersSortBy.RATING: {
+          sortKey = 'rating';
+          break;
+        }
       }
 
       if (sortKey) {
@@ -64,7 +68,11 @@ export class GetCouriersService {
 
     const [items, totalItems] = await this.prismaService.$transaction([
       this.prismaService.userCourier.findMany(query),
-      this.prismaService.userCourier.count(query),
+      this.prismaService.userCourier.count({
+        ...query,
+        skip: undefined,
+        take: undefined,
+      }),
     ]);
 
     const totalPages = Math.ceil(totalItems / itemsPerPage);
