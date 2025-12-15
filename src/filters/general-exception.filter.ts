@@ -26,7 +26,7 @@ export class GeneralExceptionFilter implements ExceptionFilter {
     const responseBody = {
       type: 'error',
       statusCode: httpStatus,
-      code: 'SERVER_ERROR',
+      code: 'ERROR',
       message: 'Server error',
       ...((exception as any)?.response ?? {})
     };
