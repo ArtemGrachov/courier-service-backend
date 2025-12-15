@@ -46,23 +46,51 @@ export class CreateOrderService {
       });
     }
 
-    const order = await this.prismaService.order.create({
-      data: {
-        description,
-        weight,
-        size,
-        volume,
-        senderAddress,
-        senderLat,
-        senderLng,
-        receiverAddress,
-        receiverLng,
-        receiverLat,
-        senderId,
-        receiverId: receiver.id,
-        courierId: null,
-        orderedAt: new Date().getTime(),
-      },
+
+    const order = await this.prismaService.$transaction(async tx => {
+      const order = await tx.order.create({
+        data: {
+          description,
+          weight,
+          size,
+          volume,
+          senderAddress,
+          senderLat,
+          senderLng,
+          receiverAddress,
+          receiverLng,
+          receiverLat,
+          senderId,
+          receiverId: receiver.id,
+          courierId: null,
+          orderedAt: new Date().getTime(),
+        },
+      });
+
+      await Promise.all([
+        tx.userClient.update({
+          where: {
+            id: order.senderId,
+          },
+          data: {
+            activeOrdersCount: {
+              increment: 1,
+            },
+          },
+        }),
+        tx.userClient.update({
+          where: {
+            id: order.receiverId,
+          },
+          data: {
+            activeOrdersCount: {
+              increment: 1,
+            },
+          },
+        }),
+      ]);
+
+      return order;
     });
 
     return order;

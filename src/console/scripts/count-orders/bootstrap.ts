@@ -6,6 +6,6 @@ export default async function() {
   const application = await NestFactory.createApplicationContext(CountOrdersModule);
   const countOrdersService = application.get(CountOrdersService);
 
-  await countOrdersService.countCourierOrders();
+  await countOrdersService.countOrders();
 }
 

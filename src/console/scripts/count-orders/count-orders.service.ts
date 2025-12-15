@@ -1,49 +1,51 @@
 import { Injectable } from '@nestjs/common';
-import { UserCourierUpdateInput } from 'src/generated/prisma/models';
-import { EOrderStatus } from 'src/modules/orders/constants/order';
+import { countOrders } from 'src/generated/prisma/sql';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 @Injectable()
 export class CountOrdersService {
   constructor(private prismaService: PrismaService) {}
 
-  public async countCourierOrders() {
-    const grouped = await this.prismaService.order.groupBy({
-      by: ['courierId', 'status'],
-      _count: {
-        id: true,
-      },
-    });
+  public async countOrders() {
+    const result = await this.prismaService.$queryRawTyped(countOrders());
 
-    const totalMap = new Map<number, number>();
-
-    for (let item of grouped) {
-      if (item.courierId == null) {
+    for (const item of result) {
+      if (!item.entityId) {
         continue;
       }
 
-      const data: UserCourierUpdateInput = {};
+      const activeOrdersCount = Number(item.activeCount);
+      const completedOrdersCount = Number(item.completedCount);
+      const totalOrdersCount = activeOrdersCount + completedOrdersCount;
 
-      switch (item.status) {
-        case EOrderStatus.COMPLETED: {
-          data.completedOrdersCount = item._count.id;
+      switch (item.entityType) {
+        case 'courier': {
+          await this.prismaService.userCourier.update({
+            where: {
+              id: item.entityId,
+            },
+            data: {
+              activeOrdersCount,
+              completedOrdersCount,
+              totalOrdersCount,
+            },
+          });
           break;
         }
-        case EOrderStatus.PROCESSING: {
-          data.activeOrdersCount = item._count.id;
+        case 'client': {
+          await this.prismaService.userClient.update({
+            where: {
+              id: item.entityId,
+            },
+            data: {
+              activeOrdersCount,
+              completedOrdersCount,
+              totalOrdersCount,
+            },
+          });
           break;
         }
       }
-
-      data.totalOrdersCount = (totalMap.get(item.courierId) ?? 0) + item._count.id;
-      totalMap.set(item.courierId, data.totalOrdersCount);
-
-      await this.prismaService.userCourier.update({
-        where: {
-          id: item.courierId,
-        },
-        data,
-      });
     }
   }
 }

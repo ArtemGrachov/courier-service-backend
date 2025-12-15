@@ -7,6 +7,7 @@ import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { RateCourierDto } from '../../dto/rate-courier.dto';
 import { OrderWrongCourierException } from '../../exceptions/order-wrong-courier.exception';
 import { OrderNotCompletedException } from '../../exceptions/order-not-completed.exception';
+import { addRating } from 'src/utils/add-rating';
 
 @Injectable()
 export class RateCourierService {
@@ -32,19 +33,43 @@ export class RateCourierService {
     if (order.status !== EOrderStatus.COMPLETED) {
       throw new OrderNotCompletedException(orderId);
     }
-
   }
 
   public async rateCourier(clientId: number, courierId: number, payload: RateCourierDto) {
     const orderId = payload.orderId;
 
-    await this.prismaService.courierRate.create({
-      data: {
-        clientId,
-        courierId,
-        orderId,
-        rating: payload.rating,
+    const courier = await this.prismaService.userCourier.findUnique({
+      where: {
+        id: courierId,
       },
+    });
+
+    if (!courier) {
+      throw new NotFoundException();
+    }
+
+    const rating = payload.rating;
+    const { averageRating, count } = addRating(courier.rating ?? 0, courier.ratingCount ?? 0, rating);
+
+    await this.prismaService.$transaction(async tx => {
+      await tx.courierRate.create({
+        data: {
+          clientId,
+          courierId,
+          orderId,
+          rating,
+        },
+      });
+
+      await tx.userCourier.update({
+        where: {
+          id: courierId,
+        },
+        data: {
+          rating: averageRating,
+          ratingCount: count,
+        },
+      });
     });
   }
 }
