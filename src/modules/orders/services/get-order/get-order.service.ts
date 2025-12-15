@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { PrismaService } from 'src/modules/prisma/services/prisma.service';
+import { OrderDataService } from '../order-data/order-data.service';
 
 import { ERoles } from 'src/constants/auth';
 
@@ -9,7 +9,7 @@ import type { IRequstUser } from 'src/types/auth/request-user';
 
 @Injectable()
 export class GetOrderService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private orderDataService: OrderDataService) {}
 
   public checkOrderAccess(requestUser: IRequstUser, order: Order) {
     switch (requestUser.role) {
@@ -29,11 +29,9 @@ export class GetOrderService {
   }
 
   public async getOrder(id: number) {
-    const order = await this.prismaService.order.findUnique({
-      where: { id },
-      include: {
-        sender: true,
-        receiver: true,
+    const order = await this.orderDataService.getOrder({
+      where: {
+        id,
       },
     });
 

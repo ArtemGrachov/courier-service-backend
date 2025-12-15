@@ -29,6 +29,7 @@ import { AcceptOrderService } from './services/accept-order/accept-order.service
 import { CompleteOrderService } from './services/complete-order/complete-order.service';
 import { RejectOrderService } from './services/reject-order/reject-order.service';
 import { CancelOrderService } from './services/cancel-order/cancel-order.service';
+import { OrderDataService } from './services/order-data/order-data.service';
 
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CompleteOrderDto } from './dto/complete-order.dto';
@@ -54,6 +55,7 @@ export class OrdersController {
     private completeOrderService: CompleteOrderService,
     private rejectOrderService: RejectOrderService,
     private cancelOrderService: CancelOrderService,
+    private orderDataService: OrderDataService,
   ) {}
 
   @Post('')
@@ -99,7 +101,15 @@ export class OrdersController {
     @Param('id', new ParseIntPipe) id: number,
   ) {
     const requestUser = req['user'] as IRequstUser;
-    const order = await this.getOrderService.getOrder(id);
+    const order = await this.orderDataService.getOrder({
+      where: {
+        id,
+      },
+      include: {
+        sender: true,
+        receiver: true,
+      },
+    });
 
     if (!order) {
       throw new NotFoundException();
@@ -121,7 +131,11 @@ export class OrdersController {
     @Param('id', new ParseIntPipe) id: number,
   ) {
     const requestUser = req['user'] as IRequstUser;
-    const order = await this.getOrderService.getOrder(id);
+    const order = await this.orderDataService.getOrder({
+      where: {
+        id,
+      },
+    });
 
     if (!order) {
       throw new NotFoundException();
@@ -159,7 +173,11 @@ export class OrdersController {
     @Body() { senderRating, receiverRating }: CompleteOrderDto,
   ) {
     const requestUser = req['user'] as IRequstUser;
-    const order = await this.getOrderService.getOrder(id);
+    const order = await this.orderDataService.getOrder({
+      where: {
+        id,
+      },
+    });
 
     if (!order) {
       throw new NotFoundException();
