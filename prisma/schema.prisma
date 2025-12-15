@@ -23,8 +23,8 @@ model UserAdmin {
 
 model Position {
   id           Int           @id @default(autoincrement())
-  lat          Int
-  lng          Int
+  lat          Float
+  lng          Float
   userCouriers UserCourier[]
 }
 
