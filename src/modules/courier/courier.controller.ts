@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
   Request,
   UsePipes,
@@ -22,6 +23,7 @@ import { GetCouriersService } from './services/get-couriers/get-couriers.service
 import { UpdateCourierService } from './services/update-courier/update-courier.service';
 import { RateCourierService } from './services/rate-courier/rate-courier.service';
 import { GetCourierService } from './services/get-courier/get-courier.service';
+import { UpdatePositionService } from './services/update-position/update-position.service';
 
 import { Roles } from '../auth/decorators/role.decorator';
 
@@ -29,6 +31,7 @@ import { CreateCourierDto } from './dto/create-courier.dto';
 import { GetCouriersDto } from './dto/get-couriers.dto';
 import { UpdateCourierDto } from './dto/update-courier.dto';
 import { RateCourierDto } from './dto/rate-courier.dto';
+import { UpdatePositionDto } from './dto/update-position.dto';
 import { ApiResponse } from 'src/responses/response';
 import { IRequstUser } from 'src/types/auth/request-user';
 
@@ -42,6 +45,7 @@ export class CourierController {
     private updateCourierService: UpdateCourierService,
     private rateCourierService: RateCourierService,
     private getCourierService: GetCourierService,
+    private updatePositionService: UpdatePositionService,
   ) {}
 
   @Get('')
@@ -147,6 +151,17 @@ export class CourierController {
       'COURIER_UPDATED_SUCCESSFULLY',
       { courier },
     );
+  }
+
+  @Put('self/position')
+  @Roles([ERoles.COURIER])
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
+  public async updatePosition(
+    @Request() req: ExpressRequest,
+    @Body() payload: UpdatePositionDto,
+  ) {
+    const requestUser = req['user'] as IRequstUser;
+    return this.updatePositionService.updateCourierPosition(requestUser.id, payload);
   }
 }
 
