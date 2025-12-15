@@ -20,6 +20,8 @@ import { ChangePasswordDto } from 'src/dto/change-password.dto';
 
 import { IRequstUser } from 'src/types/auth/request-user';
 
+import { exceptionFactory } from 'src/utils/exception-factory';
+
 @Controller('admin/auth')
 export class AdminAuthController {
   constructor(
@@ -33,7 +35,7 @@ export class AdminAuthController {
   @Post('login')
   @Roles([ERoles.GUEST])
   @HttpCode(200)
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async login(@Body() { email, password }: LoginDto) {
     return new ApiResponse(
       `Logged in successfully`,
@@ -44,7 +46,7 @@ export class AdminAuthController {
 
   @Post('forgot-password')
   @Roles([ERoles.GUEST])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async forgotPassword(@Body() { email }: ForgotPasswordDto) {
     await this.forgotPasswordService.forgotPassword(email);
 
@@ -57,7 +59,7 @@ export class AdminAuthController {
 
   @Post('reset-password')
   @Roles([ERoles.GUEST])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async resetPassword(@Body() { token, password }: ResetPasswordDto) {
     await this.resetPasswordService.resetPassword(token, password);
 
@@ -69,7 +71,7 @@ export class AdminAuthController {
 
   @Post('change-password')
   @Roles([ERoles.ADMIN])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async changePassword(
     @Request() req: ExpressRequest,
     @Body() { password }: ChangePasswordDto,

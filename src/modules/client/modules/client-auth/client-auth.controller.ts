@@ -22,6 +22,8 @@ import { ChangePasswordDto } from 'src/dto/change-password.dto';
 
 import { IRequstUser } from 'src/types/auth/request-user';
 
+import { exceptionFactory } from 'src/utils/exception-factory';
+
 @Controller('client/auth')
 export class ClientAuthController {
   constructor(
@@ -36,7 +38,7 @@ export class ClientAuthController {
   @Post('login')
   @Roles([ERoles.GUEST])
   @HttpCode(200)
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async login(@Body() { email, password }: LoginDto) {
     return new ApiResponse(
       `Logged in successfully`,
@@ -47,7 +49,7 @@ export class ClientAuthController {
 
   @Post('forgot-password')
   @Roles([ERoles.GUEST])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async forgotPassword(@Body() { email }: ForgotPasswordDto) {
     await this.forgotPasswordService.forgotPassword(email);
 
@@ -60,7 +62,7 @@ export class ClientAuthController {
 
   @Post('reset-password')
   @Roles([ERoles.GUEST])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async resetPassword(@Body() { token, password }: ResetPasswordDto) {
     await this.resetPasswordService.resetPassword(token, password);
 
@@ -72,7 +74,7 @@ export class ClientAuthController {
 
   @Post('change-password')
   @Roles([ERoles.CLIENT])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async changePassword(
     @Request() req: ExpressRequest,
     @Body() { password }: ChangePasswordDto,
@@ -91,7 +93,7 @@ export class ClientAuthController {
 
   @Post('registration')
   @Roles([ERoles.GUEST])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async registration(@Body() payload: RegistrationDto) {
     await this.clientRegistrationService.registration(payload);
 
