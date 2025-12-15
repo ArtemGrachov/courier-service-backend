@@ -102,7 +102,11 @@ export class GetOrdersService {
 
     const [items, totalItems] = await this.prismaService.$transaction([
       this.prismaService.order.findMany(query),
-      this.prismaService.order.count(query),
+      this.prismaService.order.count({
+        ...query,
+        skip: undefined,
+        take: undefined,
+      }),
     ]);
 
     const totalPages = Math.ceil(totalItems / itemsPerPage);
