@@ -6,10 +6,12 @@ import { GetOrdersService } from './services/get-orders/get-orders.service';
 import { GetOrderService } from './services/get-order/get-order.service';
 import { AcceptOrderService } from './services/accept-order/accept-order.service';
 import { CompleteOrderService } from './services/complete-order/complete-order.service';
+import { RejectOrderService } from './services/reject-order/reject-order.service';
+import { CancelOrderService } from './services/cancel-order/cancel-order.service';
 
 @Module({
   imports: [PrismaModule],
   controllers: [OrdersController],
-  providers: [CreateOrderService, GetOrdersService, GetOrderService, AcceptOrderService, CompleteOrderService]
+  providers: [CreateOrderService, GetOrdersService, GetOrderService, AcceptOrderService, CompleteOrderService, RejectOrderService, CancelOrderService]
 })
 export class OrdersModule {}
