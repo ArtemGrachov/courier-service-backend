@@ -4,7 +4,7 @@ import { RegistrationDto } from '../../dto/registration.dto';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import { PasswordService } from 'src/modules/password/services/password/password.service';
 
-import { UserAlreadyExistsException } from '../../exceptions/user-already-exists.exception';
+import { UserAlreadyExistsException } from 'src/exceptions/user-already-exists.exception';
 
 @Injectable()
 export class ClientRegistrationService {
