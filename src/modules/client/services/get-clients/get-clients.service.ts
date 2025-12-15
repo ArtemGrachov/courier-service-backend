@@ -15,9 +15,9 @@ export class GetClientsService {
   public async getClients({
     page,
     itemsPerPage,
-    /*
     phone,
-    */
+    email,
+    search,
     sortBy,
     sortOrder,
   }: GetClientsDto) {
@@ -48,6 +48,43 @@ export class GetClientsService {
       if (sortKey) {
         orderBy = {
           [sortKey]: sortOrder ?? ESortOrder.DESC,
+        };
+      }
+    }
+
+    if (search) {
+      where.AND = [
+        { ...where },
+        {
+          OR: [
+            {
+              phone: {
+                contains: `%${search}%`,
+              },
+            },
+            {
+              email: {
+                contains: `%${search}%`,
+              },
+            },
+            {
+              name: {
+                contains: `%${search}%`,
+              },
+            },
+          ],
+        },
+      ];
+    } else {
+      if (phone) {
+        where.phone = {
+          contains: `%${phone}%`,
+        };
+      }
+
+      if (email) {
+        where.email = {
+          contains: `%${email}%`,
         };
       }
     }

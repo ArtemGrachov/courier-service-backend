@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Min, MinLength } from 'class-validator';
 
 import { EClientsSortBy } from '../services/get-clients/constants';
 import { ESortOrder } from 'src/constants/sort';
@@ -16,7 +16,18 @@ export class GetClientsDto {
 
   @IsOptional()
   @IsString()
+  @MinLength(3)
   phone?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  search?: string;
 
   @IsOptional()
   @IsEnum(EClientsSortBy)
