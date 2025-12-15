@@ -46,6 +46,10 @@ export class GetCouriersService {
           sortKey = 'completedOrdersCount';
           break;
         }
+        case ECouriersSortBy.RATING: {
+          sortKey = 'rating';
+          break;
+        }
       }
 
       if (sortKey) {
