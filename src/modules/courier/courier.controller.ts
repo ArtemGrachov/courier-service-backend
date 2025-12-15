@@ -32,6 +32,7 @@ import { RateCourierDto } from './dto/rate-courier.dto';
 import { ApiResponse } from 'src/responses/response';
 import { IRequstUser } from 'src/types/auth/request-user';
 
+import { exceptionFactory } from 'src/utils/exception-factory';
 
 @Controller('courier')
 export class CourierController {
@@ -49,7 +50,8 @@ export class CourierController {
     @Query(new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: true,
+      exceptionFactory,
     })) {
       page,
       itemsPerPage,
@@ -71,7 +73,7 @@ export class CourierController {
 
   @Post('')
   @Roles([ERoles.ADMIN])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async createCourier(@Body() payload: CreateCourierDto) {
     const courier = await this.createCourierService.createCourier(payload);
 
@@ -96,7 +98,7 @@ export class CourierController {
 
   @Post(':id/rate')
   @Roles([ERoles.CLIENT])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async rateCourier(
     @Request() req: ExpressRequest,
     @Param('id', new ParseIntPipe) courierId: number,
@@ -116,7 +118,7 @@ export class CourierController {
 
   @Patch('self')
   @Roles([ERoles.COURIER])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async selfUpdateCourier(
     @Request() req: ExpressRequest,
     @Body() payload: UpdateCourierDto,
@@ -133,7 +135,7 @@ export class CourierController {
 
   @Patch(':id')
   @Roles([ERoles.ADMIN])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async updateCourier(
     @Param('id', new ParseIntPipe) id: number,
     @Body() payload: UpdateCourierDto,

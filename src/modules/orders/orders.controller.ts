@@ -42,6 +42,8 @@ import { OrderNotAcceptedException } from './exceptions/order-not-accepted.excep
 import { OrderNotProcessingException } from './exceptions/order-not-processing.exception';
 import { OrderAlreadyCancelledException } from './exceptions/order-already-cancelled.exception';
 
+import { exceptionFactory } from 'src/utils/exception-factory';
+
 @Controller('orders')
 export class OrdersController {
   constructor(
@@ -56,7 +58,7 @@ export class OrdersController {
 
   @Post('')
   @Roles([ERoles.CLIENT])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async createOrder(
     @Request() req: ExpressRequest,
     @Body() payload: CreateOrderDto,
@@ -80,6 +82,7 @@ export class OrdersController {
       transform: true,
       transformOptions: { enableImplicitConversion: true },
       forbidNonWhitelisted: true,
+      exceptionFactory,
     })) query: GetOrdersDto,
   ) {
     const requestUser = req['user'] as IRequstUser;
@@ -149,7 +152,7 @@ export class OrdersController {
 
   @Patch(':id/complete')
   @Roles([ERoles.COURIER])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async completeOrder(
     @Request() req: ExpressRequest,
     @Param('id', new ParseIntPipe) id: number,

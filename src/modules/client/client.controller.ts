@@ -13,6 +13,8 @@ import { GetClientsDto } from './dto/get-clients.dto';
 import { IRequstUser } from 'src/types/auth/request-user';
 import { UpdateClientDto } from './dto/update-client.dto';
 
+import { exceptionFactory } from 'src/utils/exception-factory';
+
 @Controller('client')
 export class ClientController {
   constructor(
@@ -27,7 +29,8 @@ export class ClientController {
     @Query(new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: true,
+      exceptionFactory,
     })) query: GetClientsDto,
   ) {
     const result = await this.getClientsService.getClients(query);
@@ -49,7 +52,7 @@ export class ClientController {
 
   @Patch('self')
   @Roles([ERoles.CLIENT])
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(new ValidationPipe({ transform: true, exceptionFactory }))
   public async updateClient(
     @Request() req: ExpressRequest,
     @Body() payload: UpdateClientDto,
