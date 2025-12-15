@@ -38,6 +38,7 @@ import { OrderAlreadyAcceptedException } from './exceptions/order-already-accept
 import { OrderAlreadyCompletedException } from './exceptions/order-already-completed.exception';
 import { OrderNotAcceptedException } from './exceptions/order-not-accepted.exception';
 import { OrderNotProcessingException } from './exceptions/order-not-processing.exception';
+import { RejectOrderService } from './services/reject-order/reject-order.service';
 
 @Controller('orders')
 export class OrdersController {
@@ -47,6 +48,7 @@ export class OrdersController {
     private getOrderService: GetOrderService,
     private acceptOrderService: AcceptOrderService,
     private completeOrderService: CompleteOrderService,
+    private rejectOrderService: RejectOrderService,
   ) {}
 
   @Post('')
@@ -176,6 +178,38 @@ export class OrdersController {
     return new ApiResponse(
       'ORDER_COMPLETED_SUCCESSFULLY',
       `Order ${order.id} completed successfully`,
+      { order },
+    );
+  }
+
+  @Patch(':id/reject')
+  @Roles([ERoles.COURIER])
+  public async rejectOrder(
+    @Request() req: ExpressRequest,
+    @Param('id', new ParseIntPipe) id: number,
+  ) {
+    const requestUser = req['user'] as IRequstUser;
+    const order = await this.getOrderService.getOrder(id);
+
+    if (!order) {
+      throw new NotFoundException();
+    }
+
+    const hasAccess = this.getOrderService.checkOrderAccess(requestUser, order);
+
+    if (!hasAccess) {
+      throw new ForbiddenException();
+    }
+
+    if (order.status === EOrderStatus.COMPLETED) {
+      throw new OrderAlreadyCompletedException(order.id);
+    }
+
+    await this.rejectOrderService.rejectOrder(requestUser, id);
+
+    return new ApiResponse(
+      'ORDER_REJECTED_SUCCESSFULLY',
+      `Order ${order.id} rejected successfully`,
       { order },
     );
   }
