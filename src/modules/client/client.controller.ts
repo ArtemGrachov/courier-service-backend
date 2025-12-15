@@ -1,4 +1,5 @@
-import { Controller, Get, NotFoundException, Param, ParseIntPipe, Query, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, ParseIntPipe, Patch, Query, Request, UsePipes, ValidationPipe } from '@nestjs/common';
+import { type Request as ExpressRequest } from 'express';
 
 import { ERoles } from 'src/constants/auth';
 
@@ -6,14 +7,18 @@ import { Roles } from '../auth/decorators/role.decorator';
 
 import { GetClientService } from './services/get-client/get-client.service';
 import { GetClientsService } from './services/get-clients/get-clients.service';
+import { UpdateClientService } from './services/update-client/update-client.service';
 
 import { GetClientsDto } from './dto/get-clients.dto';
+import { IRequstUser } from 'src/types/auth/request-user';
+import { UpdateClientDto } from './dto/update-client.dto';
 
 @Controller('client')
 export class ClientController {
   constructor(
     private getClientService: GetClientService,
     private getClientsService: GetClientsService,
+    private updateClientService: UpdateClientService,
   ) {}
 
   @Get('')
@@ -40,6 +45,17 @@ export class ClientController {
     }
 
     return courier;
+  }
+
+  @Patch('self')
+  @Roles([ERoles.CLIENT])
+  @UsePipes(new ValidationPipe({ transform: true }))
+  public async updateClient(
+    @Request() req: ExpressRequest,
+    @Body() payload: UpdateClientDto,
+  ) {
+    const requestUser = req['user'] as IRequstUser;
+    return this.updateClientService.updateClient(requestUser.id, payload);
   }
 }
 
