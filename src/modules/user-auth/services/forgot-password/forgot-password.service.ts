@@ -43,7 +43,7 @@ export class ForgotPasswordService {
       data: {
         token: hashedToken,
         expires,
-        userId: user.id,
+        user_id: user.id,
       },
     });
 

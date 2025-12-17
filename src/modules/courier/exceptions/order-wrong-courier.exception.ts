@@ -9,7 +9,7 @@ export class OrderWrongCourierException extends ApiErrorResponse {
       `Courier "${courierId}" is not related to the order "${orderId}"`,
       {
         orderId,
-        courierId,
+        courier_id: courierId,
       },
     );
   }

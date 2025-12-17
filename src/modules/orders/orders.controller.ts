@@ -147,7 +147,7 @@ export class OrdersController {
       throw new ForbiddenException();
     }
 
-    if (order.courierId != null) {
+    if (order.courier_id != null) {
       throw new OrderAlreadyAcceptedException(order.id);
     }
 
@@ -189,7 +189,7 @@ export class OrdersController {
       throw new ForbiddenException();
     }
 
-    if (order.courierId == null) {
+    if (order.courier_id == null) {
       throw new OrderNotAcceptedException(order.id);
     }
 

@@ -43,7 +43,7 @@ export class CreateAdminService {
     await this.prismaService.userAdmin.create({
       data: {
         email,
-        passwordHash,
+        password_hash: passwordHash,
       }
     })
   }

@@ -7,7 +7,7 @@ export class CountRatingsService {
 
   public async countCourierRatings() {
     const ratings = await this.prismaService.courierRate.groupBy({
-      by: ['courierId'],
+      by: ['courier_id'],
       _avg: {
         rating: true,
       },
@@ -19,11 +19,11 @@ export class CountRatingsService {
     for (let item of ratings) {
       await this.prismaService.userCourier.update({
         where: {
-          id: item.courierId,
+          id: item.courier_id,
         },
         data: {
           rating: item._avg.rating,
-          ratingCount: item._count._all,
+          rating_count: item._count._all,
         },
       });
     }
@@ -31,7 +31,7 @@ export class CountRatingsService {
 
   public async countClientRatings() {
     const ratings = await this.prismaService.clientRate.groupBy({
-      by: ['clientId'],
+      by: ['client_id'],
       _avg: {
         rating: true,
       },
@@ -43,11 +43,11 @@ export class CountRatingsService {
     for (let item of ratings) {
       await this.prismaService.userClient.update({
         where: {
-          id: item.clientId,
+          id: item.client_id,
         },
         data: {
           rating: item._avg.rating,
-          ratingCount: item._count._all,
+          rating_count: item._count._all,
         },
       });
     }

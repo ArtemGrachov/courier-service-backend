@@ -47,10 +47,10 @@ export class CompleteOrderService {
           id: requestUser.id,
         },
         data: {
-          activeOrdersCount: {
+          active_orders_count: {
             decrement: 1,
           },
-          completedOrdersCount: {
+          completed_orders_count: {
             increment: 1,
           },
         },
@@ -58,13 +58,13 @@ export class CompleteOrderService {
 
       await tx.userClient.update({
         where: {
-          id: order.senderId,
+          id: order.sender_id,
         },
         data: {
-          activeOrdersCount: {
+          active_orders_count: {
             decrement: 1,
           },
-          completedOrdersCount: {
+          completed_orders_count: {
             increment: 1,
           },
         },
@@ -72,13 +72,13 @@ export class CompleteOrderService {
 
       await tx.userClient.update({
         where: {
-          id: order.receiverId,
+          id: order.receiver_id,
         },
         data: {
-          activeOrdersCount: {
+          active_orders_count: {
             decrement: 1,
           },
-          completedOrdersCount: {
+          completed_orders_count: {
             increment: 1,
           },
         },
@@ -86,56 +86,56 @@ export class CompleteOrderService {
 
       await tx.clientRate.create({
         data: {
-          orderId: id,
+          order_id: id,
           rating: senderRating,
-          clientId: order.senderId,
-          courierId: requestUser.id,
+          client_id: order.sender_id,
+          courier_id: requestUser.id,
         },
       });
 
       await tx.clientRate.create({
         data: {
-          orderId: id,
+          order_id: id,
           rating: receiverRating,
-          clientId: order.receiverId,
-          courierId: requestUser.id,
+          client_id: order.receiver_id,
+          courier_id: requestUser.id,
         },
       });
 
       const sender = await tx.userClient.findUnique({
         where: {
-          id: order.senderId,
+          id: order.sender_id,
         },
       });
 
       const receiver = await tx.userClient.findUnique({
         where: {
-          id: order.receiverId,
+          id: order.receiver_id,
         },
       });
 
       if (sender) {
-        const { averageRating, count } = addRating(sender.rating ?? 0, sender.ratingCount ?? 0, senderRating);
+        const { averageRating, count } = addRating(sender.rating ?? 0, sender.rating_count ?? 0, senderRating);
         await tx.userClient.update({
           where: {
-            id: order.senderId,
+            id: order.sender_id,
           },
           data: {
             rating: averageRating,
-            ratingCount: count,
+            rating_count: count,
           },
         });
       }
 
       if (receiver) {
-        const { averageRating, count } = addRating(receiver.rating ?? 0, receiver.ratingCount ?? 0, receiverRating);
+        const { averageRating, count } = addRating(receiver.rating ?? 0, receiver.rating_count ?? 0, receiverRating);
         await tx.userClient.update({
           where: {
-            id: order.receiverId,
+            id: order.receiver_id,
           },
           data: {
             rating: averageRating,
-            ratingCount: count,
+            rating_count: count,
           },
         });
       }

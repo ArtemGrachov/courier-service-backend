@@ -40,24 +40,10 @@ export class CancelOrderService {
           id: requestUser.id,
         },
         data: {
-          activeOrdersCount: {
+          active_orders_count: {
             decrement: 1,
           },
-          completedOrdersCount: {
-            decrement: 1,
-          },
-        },
-      });
-
-      await tx.userClient.update({
-        where: {
-          id: order.senderId,
-        },
-        data: {
-          activeOrdersCount: {
-            decrement: 1,
-          },
-          completedOrdersCount: {
+          completed_orders_count: {
             decrement: 1,
           },
         },
@@ -65,13 +51,27 @@ export class CancelOrderService {
 
       await tx.userClient.update({
         where: {
-          id: order.receiverId,
+          id: order.sender_id,
         },
         data: {
-          activeOrdersCount: {
+          active_orders_count: {
             decrement: 1,
           },
-          completedOrdersCount: {
+          completed_orders_count: {
+            decrement: 1,
+          },
+        },
+      });
+
+      await tx.userClient.update({
+        where: {
+          id: order.receiver_id,
+        },
+        data: {
+          active_orders_count: {
+            decrement: 1,
+          },
+          completed_orders_count: {
             decrement: 1,
           },
         },
