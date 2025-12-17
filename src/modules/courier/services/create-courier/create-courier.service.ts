@@ -23,7 +23,7 @@ export class CreateCourierService {
           name,
           email,
           phone,
-          passwordHash,
+          password_hash: passwordHash,
           position: {
             create: {
               lat: 0,

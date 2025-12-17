@@ -41,7 +41,7 @@ export class CreateOrderService {
           email: `noemail_${receiverPhone}`,
           name: receiverName!,
           phone: receiverPhone!,
-          passwordHash: '',
+          password_hash: '',
         },
       });
     }
@@ -54,36 +54,36 @@ export class CreateOrderService {
           weight,
           size,
           volume,
-          senderAddress,
-          senderLat,
-          senderLng,
-          receiverAddress,
-          receiverLng,
-          receiverLat,
-          senderId,
-          receiverId: receiver.id,
-          courierId: null,
-          orderedAt: new Date().getTime(),
+          sender_address: senderAddress,
+          sender_lat: senderLat,
+          sender_lng: senderLng,
+          receiver_address: receiverAddress,
+          receiver_lat: receiverLat,
+          receiver_lng: receiverLng,
+          sender_id: senderId,
+          receiver_id: receiver.id,
+          courier_id: null,
+          ordered_at: new Date().getTime(),
         },
       });
 
       await Promise.all([
         tx.userClient.update({
           where: {
-            id: order.senderId,
+            id: order.sender_id,
           },
           data: {
-            activeOrdersCount: {
+            active_orders_count: {
               increment: 1,
             },
           },
         }),
         tx.userClient.update({
           where: {
-            id: order.receiverId,
+            id: order.receiver_id,
           },
           data: {
-            activeOrdersCount: {
+            active_orders_count: {
               increment: 1,
             },
           },

@@ -22,11 +22,11 @@ export class RateCourierService {
       throw new NotFoundException();
     }
 
-    if (order.senderId !== clientId && order.receiverId !== clientId) {
+    if (order.sender_id !== clientId && order.receiver_id !== clientId) {
       throw new ForbiddenException();
     }
 
-    if (order.courierId !== courierId) {
+    if (order.courier_id !== courierId) {
       throw new OrderWrongCourierException(orderId, courierId)
     }
 
@@ -49,14 +49,14 @@ export class RateCourierService {
     }
 
     const rating = payload.rating;
-    const { averageRating, count } = addRating(courier.rating ?? 0, courier.ratingCount ?? 0, rating);
+    const { averageRating, count } = addRating(courier.rating ?? 0, courier.rating_count ?? 0, rating);
 
     await this.prismaService.$transaction(async tx => {
       await tx.courierRate.create({
         data: {
-          clientId,
-          courierId,
-          orderId,
+          client_id: clientId,
+          courier_id: courierId,
+          order_id: orderId,
           rating,
         },
       });
@@ -67,7 +67,7 @@ export class RateCourierService {
         },
         data: {
           rating: averageRating,
-          ratingCount: count,
+          rating_count: count,
         },
       });
     });

@@ -10,13 +10,13 @@ export class PrismaService extends PrismaClient {
       adapter,
       omit: {
         userAdmin: {
-          passwordHash: true,
+          password_hash: true,
         },
         userCourier: {
-          passwordHash: true,
+          password_hash: true,
         },
         userClient: {
-          passwordHash: true,
+          password_hash: true,
         },
       },
     });

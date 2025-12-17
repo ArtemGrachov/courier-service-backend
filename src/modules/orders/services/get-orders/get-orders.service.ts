@@ -33,19 +33,19 @@ export class GetOrdersService {
     let where: OrderWhereInput = {};
 
     if (couriers?.length) {
-      where.courierId = {
+      where.courier_id = {
         in: couriers,
       };
     }
 
     if (senders?.length) {
-      where.senderId = {
+      where.sender_id = {
         in: senders,
       };
     }
 
     if (receivers?.length) {
-      where.receiverId = {
+      where.receiver_id = {
         in: receivers,
       };
     }
@@ -76,15 +76,15 @@ export class GetOrdersService {
         case ERoles.CLIENT: {
           userQuery = {
             OR: [
-              { senderId: user.id },
-              { receiverId: user.id },
+              { sender_id: user.id },
+              { receiver_id: user.id },
             ],
           };
           break;
         }
         case ERoles.COURIER: {
           userQuery = {
-            courierId: user.id,
+            courier_id: user.id,
           };
           break;
         }

@@ -29,7 +29,7 @@ export class ClientRegistrationService {
       email,
       name,
       phone,
-      passwordHash,
+      password_hash: passwordHash,
     };
 
     if (addedByOtherUser) {

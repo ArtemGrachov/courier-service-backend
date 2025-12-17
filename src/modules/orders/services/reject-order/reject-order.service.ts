@@ -23,7 +23,7 @@ export class RejectOrderService {
           id,
         },
         data: {
-          courierId: requestUser.id,
+          courier_id: requestUser.id,
           status: EOrderStatus.ORDERED,
         },
       }),
@@ -32,7 +32,7 @@ export class RejectOrderService {
           id: requestUser.id,
         },
         data: {
-          activeOrdersCount: {
+          active_orders_count: {
             decrement: 1,
           },
         },

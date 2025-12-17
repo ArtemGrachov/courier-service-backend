@@ -34,7 +34,7 @@ export class ResetPasswordService {
       throw new IncorrectResetTokenException();
     }
 
-    const userId = resetToken.userId;
+    const userId = resetToken.user_id;
 
     const user = await this.userService.userById(userId);
 

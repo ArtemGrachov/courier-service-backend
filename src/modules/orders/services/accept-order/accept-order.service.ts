@@ -31,7 +31,7 @@ export class AcceptOrderService {
           id,
         },
         data: {
-          courierId: requestUser.id,
+          courier_id: requestUser.id,
           status: EOrderStatus.PROCESSING,
         },
       }),
@@ -40,7 +40,7 @@ export class AcceptOrderService {
           id: requestUser.id,
         },
         data: {
-          activeOrdersCount: {
+          active_orders_count: {
             increment: 1,
           },
         },

@@ -17,10 +17,10 @@ export class GetOrderService {
         return true;
       }
       case ERoles.CLIENT: {
-        return order.senderId === requestUser.id || order.receiverId === requestUser.id;
+        return order.sender_id === requestUser.id || order.receiver_id === requestUser.id;
       }
       case ERoles.COURIER: {
-        return !order.courierId || order.courierId === requestUser.id;
+        return !order.courier_id || order.courier_id === requestUser.id;
       }
       default: {
         return false;

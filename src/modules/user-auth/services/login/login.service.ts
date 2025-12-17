@@ -21,7 +21,7 @@ export class LoginService {
       throw new IncorrectEmailOrPasswordException(email);
     }
 
-    const isPasswordValid = await this.passwordService.comparePassword(password, user.passwordHash);
+    const isPasswordValid = await this.passwordService.comparePassword(password, user.password_hash);
 
     if (!isPasswordValid) {
       throw new IncorrectEmailOrPasswordException(email);

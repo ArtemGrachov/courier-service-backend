@@ -12,14 +12,14 @@ export class AdminAuthUserService extends AbstractUserService {
   public async userByEmail(email: string) {
     return this.prismaService.userAdmin.findUnique({
       where: { email },
-      omit: { passwordHash: false },
+      omit: { password_hash: false },
     });
   }
 
   public async userById(id: number) {
     return this.prismaService.userAdmin.findUnique({
       where: { id },
-      omit: { passwordHash: false },
+      omit: { password_hash: false },
     });
   }
 
@@ -29,7 +29,7 @@ export class AdminAuthUserService extends AbstractUserService {
         id,
       },
       data: {
-        passwordHash,
+        password_hash: passwordHash,
       }
     });
   }
