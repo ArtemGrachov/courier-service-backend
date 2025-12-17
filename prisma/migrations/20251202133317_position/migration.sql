@@ -1,6 +1,0 @@
--- CreateTable
-CREATE TABLE "Position" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "lat" INTEGER NOT NULL,
-    "lng" INTEGER NOT NULL
-);
