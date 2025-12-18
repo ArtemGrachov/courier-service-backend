@@ -34,8 +34,8 @@ model Order {
   weight           String        @default("")
   size             String        @default("")
   volume           String        @default("")
-  ordered_at       Int           @default(-1)
-  completed_at     Int           @default(-1)
+  ordered_at       DateTime      @default(now())
+  completed_at     DateTime?
   sender_lat       Int           @default(0)
   sender_lng       Int           @default(0)
   receiver_lat     Int           @default(0)
