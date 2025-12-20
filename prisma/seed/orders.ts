@@ -89,11 +89,11 @@ async function seedOrders(prismaClient: PrismaClient, clients: UserClient[], cou
     couriers,
   ), { count: ACTIVE_ORDERS_COUNT });
 
-  const completedOrders = await prismaClient.order.createMany({
+  const completedOrders = await prismaClient.order.createManyAndReturn({
     data: completedOrdersData,
   });
 
-  const activeOrders = await prismaClient.order.createMany({
+  const activeOrders = await prismaClient.order.createManyAndReturn({
     data: activeOrdersData,
   });
 

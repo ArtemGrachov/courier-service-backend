@@ -3,6 +3,7 @@ import { PrismaClient } from '../../src/generated/prisma/client';
 import seedClients from './clients';
 import seedCouriers from './couriers';
 import seedOrders from './orders';
+import seedRates from './rates';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 
@@ -14,7 +15,8 @@ async function seed() {
   try {
     const clients = await seedClients(prisma);
     const couriers = await seedCouriers(prisma);
-    await seedOrders(prisma, clients, couriers);
+    const orders = await seedOrders(prisma, clients, couriers);
+    await seedRates(prisma, orders.completedOrders);
   } catch (err) {
     console.log(err?.meta?.driverAdapterError?.cause);
     throw err;
