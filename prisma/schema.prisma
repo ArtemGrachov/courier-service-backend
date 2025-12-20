@@ -36,10 +36,10 @@ model Order {
   volume           String        @default("")
   ordered_at       DateTime      @default(now())
   completed_at     DateTime?
-  sender_lat       Int           @default(0)
-  sender_lng       Int           @default(0)
-  receiver_lat     Int           @default(0)
-  receiver_lng     Int           @default(0)
+  sender_lat       Float         @default(0)
+  sender_lng       Float         @default(0)
+  receiver_lat     Float         @default(0)
+  receiver_lng     Float         @default(0)
   client_rates     ClientRate[]
   courier_rates    CourierRate[]
   sender_address   String
