@@ -80,7 +80,7 @@ async function seedOrders(prismaClient: PrismaClient, clients: UserClient[], cou
   ), { count: COMPLETED_ORDERS_COUNT });
 
   const activeOrdersData = faker.helpers.multiple(() => generateOrder(
-    [EOrderStatus.CANCELLED, EOrderStatus.COMPLETED],
+    [EOrderStatus.ORDERED, EOrderStatus.PROCESSING],
     {
       from: dayjs().subtract(1, 'day').toDate(),
       to: new Date(),
