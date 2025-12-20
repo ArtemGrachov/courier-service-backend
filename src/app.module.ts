@@ -1,10 +1,23 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+
+import { AdminModule } from './modules/admin/admin.module';
+
+import { AuthModule } from './modules/auth/auth.module';
+import { UserAuthModule } from './modules/user-auth/user-auth.module';
+import { CourierModule } from './modules/courier/courier.module';
+import { ClientModule } from './modules/client/client.module';
+import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot(),
+    AdminModule,
+    AuthModule,
+    UserAuthModule,
+    CourierModule,
+    ClientModule,
+    OrdersModule,
+  ],
 })
 export class AppModule {}

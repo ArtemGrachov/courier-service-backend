@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  moduleFormat    = "cjs"
+  previewFeatures = ["typedSql"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model UserAdmin {
+  id            Int    @id @default(autoincrement())
+  email         String @unique
+  password_hash String
+}
+
+model Position {
+  id            Int           @id @default(autoincrement())
+  lat           Float
+  lng           Float
+  user_couriers UserCourier[]
+}
+
+model Order {
+  id               Int           @id @default(autoincrement())
+  description      String        @default("")
+  weight           String        @default("")
+  size             String        @default("")
+  volume           String        @default("")
+  ordered_at       DateTime      @default(now())
+  completed_at     DateTime?
+  sender_lat       Float         @default(0)
+  sender_lng       Float         @default(0)
+  receiver_lat     Float         @default(0)
+  receiver_lng     Float         @default(0)
+  client_rates     ClientRate[]
+  courier_rates    CourierRate[]
+  sender_address   String
+  sender           UserClient    @relation("SenderOrders", fields: [sender_id], references: [id])
+  sender_id        Int           @default(-1)
+  receiver_address String
+  receiver         UserClient    @relation("ReceiverOrders", fields: [receiver_id], references: [id])
+  receiver_id      Int           @default(-1)
+  courier          UserCourier?  @relation(fields: [courier_id], references: [id])
+  courier_id       Int?
+  status           String        @default("ordered")
+}
+
+model UserCourier {
+  id                     Int           @id @default(autoincrement())
+  email                  String        @unique
+  password_hash          String
+  status                 String        @default("offline")
+  name                   String
+  phone                  String
+  position               Position      @relation(fields: [position_id], references: [id])
+  position_id            Int
+  client_rates           ClientRate[]
+  courier_rates          CourierRate[]
+  orders                 Order[]
+  active_orders_count    Int           @default(0)
+  completed_orders_count Int           @default(0)
+  total_orders_count     Int           @default(0)
+  rating                 Float?
+  rating_count           Int           @default(0)
+}
+
+model UserClient {
+  id                     Int           @id @default(autoincrement())
+  email                  String        @unique
+  password_hash          String
+  name                   String
+  phone                  String
+  client_rates           ClientRate[]
+  courier_rates          CourierRate[]
+  sender_orders          Order[]       @relation("SenderOrders")
+  receiver_orders        Order[]       @relation("ReceiverOrders")
+  active_orders_count    Int           @default(0)
+  completed_orders_count Int           @default(0)
+  total_orders_count     Int           @default(0)
+  rating                 Float?
+  rating_count           Int           @default(0)
+}
+
+model ClientRate {
+  rating     Int
+  client     UserClient  @relation(fields: [client_id], references: [id])
+  client_id  Int
+  courier    UserCourier @relation(fields: [courier_id], references: [id])
+  courier_id Int
+  order      Order       @relation(fields: [order_id], references: [id])
+  order_id   Int
+
+  @@id([client_id, courier_id, order_id])
+}
+
+model CourierRate {
+  rating     Int
+  client     UserClient  @relation(fields: [client_id], references: [id])
+  client_id  Int
+  courier    UserCourier @relation(fields: [courier_id], references: [id])
+  courier_id Int
+  order      Order       @relation(fields: [order_id], references: [id])
+  order_id   Int
+
+  @@id([client_id, courier_id, order_id])
+}
+
+model ResetPasswordToken {
+  id      Int    @id @default(autoincrement())
+  token   String
+  expires Int
+  user_id Int
+}
