@@ -4,3 +4,9 @@ export enum ECourierStatus {
   DELIVERING = 'delivering',
 }
 
+export const COURIER_STATUSES = [
+  ECourierStatus.OFFLINE,
+  ECourierStatus.IDLE,
+  ECourierStatus.DELIVERING,
+];
+

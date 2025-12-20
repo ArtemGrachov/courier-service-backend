@@ -63,7 +63,7 @@ export class CreateOrderService {
           sender_id: senderId,
           receiver_id: receiver.id,
           courier_id: null,
-          ordered_at: new Date().getTime(),
+          ordered_at: new Date(),
         },
       });
 
