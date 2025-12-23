@@ -17,6 +17,11 @@ export class GetClientsDto {
   @IsOptional()
   @IsString()
   @MinLength(3)
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
   phone?: string;
 
   @IsOptional()

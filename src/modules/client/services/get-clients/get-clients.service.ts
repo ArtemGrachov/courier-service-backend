@@ -15,6 +15,7 @@ export class GetClientsService {
   public async getClients({
     page,
     itemsPerPage,
+    name,
     phone,
     email,
     search,
@@ -31,16 +32,20 @@ export class GetClientsService {
       let sortKey: string | null = null;
 
       switch (sortBy) {
+        case EClientsSortBy.NAME: {
+          sortKey = 'name';
+          break;
+        }
         case EClientsSortBy.TOTAL_ORDERS: {
-          sortKey = 'totalOrdersCount';
+          sortKey = 'total_orders_count';
           break;
         }
         case EClientsSortBy.ACTIVE_ORDERS: {
-          sortKey = 'activeOrdersCount';
+          sortKey = 'active_orders_count';
           break;
         }
         case EClientsSortBy.COMPLETED_ORDERS: {
-          sortKey = 'completedOrdersCount';
+          sortKey = 'completed_orders_count';
           break;
         }
       }
@@ -60,31 +65,43 @@ export class GetClientsService {
             {
               phone: {
                 contains: `%${search}%`,
+                mode: 'insensitive',
               },
             },
             {
               email: {
                 contains: `%${search}%`,
+                mode: 'insensitive',
               },
             },
             {
               name: {
                 contains: `%${search}%`,
+                mode: 'insensitive',
               },
             },
           ],
         },
       ];
     } else {
+      if (name) {
+        where.name = {
+          contains: `%${name}%`,
+          mode: 'insensitive',
+        };
+      }
+
       if (phone) {
         where.phone = {
           contains: `%${phone}%`,
+          mode: 'insensitive',
         };
       }
 
       if (email) {
         where.email = {
           contains: `%${email}%`,
+          mode: 'insensitive',
         };
       }
     }
