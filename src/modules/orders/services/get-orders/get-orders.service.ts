@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
+import { OrderCountArgs, OrderFindManyArgs, OrderOrderByWithRelationInput, OrderWhereInput } from 'src/generated/prisma/models';
 
+import { EOrdersSortBy } from './constants';
 import { ESortOrder } from 'src/constants/sort';
 import { ERoles } from 'src/constants/auth';
 
 import { GetOrdersDto } from '../../dto/get-orders.dto';
-import { OrderOrderByWithRelationInput, OrderWhereInput } from 'src/generated/prisma/models';
 import { IRequstUser } from 'src/types/auth/request-user';
 
 @Injectable()
@@ -57,16 +58,36 @@ export class GetOrdersService {
     }
 
     if (sortBy) {
-      orderBy = {
-        [sortBy]: sortOrder ?? ESortOrder.DESC,
-      };
+      let sortKey: string | null = null;
+
+      switch (sortBy) {
+        case EOrdersSortBy.ORDERED_DATE: {
+          sortKey = 'ordered_at';
+          break;
+        }
+        case EOrdersSortBy.COMPLETED_DATE: {
+          sortKey = 'completed_at';
+          break;
+        }
+      }
+
+      if (sortKey) {
+        orderBy = {
+          [sortKey]: sortOrder ?? ESortOrder.DESC,
+        };
+      }
     }
 
-    const query = {
+    const query: OrderFindManyArgs = {
       skip,
       take: itemsPerPage,
       where,
       orderBy,
+      include: {
+        sender: true,
+        receiver: true,
+        courier: true,
+      },
     };
 
     if (user) {
@@ -93,7 +114,7 @@ export class GetOrdersService {
       if (userQuery) {
         query.where = {
           AND: [
-            query.where,
+            query.where!,
             userQuery,
           ],
         };
@@ -104,9 +125,10 @@ export class GetOrdersService {
       this.prismaService.order.findMany(query),
       this.prismaService.order.count({
         ...query,
+        include: undefined,
         skip: undefined,
         take: undefined,
-      }),
+      } as OrderCountArgs),
     ]);
 
     const totalPages = Math.ceil(totalItems / itemsPerPage);
