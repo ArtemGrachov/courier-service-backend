@@ -38,6 +38,10 @@ export class GetCouriersService {
       let sortKey: string | null = null;
 
       switch (sortBy) {
+        case ECouriersSortBy.NAME: {
+          sortKey = 'name';
+          break;
+        }
         case ECouriersSortBy.TOTAL_ORDERS: {
           sortKey = 'total_orders_count';
           break;
