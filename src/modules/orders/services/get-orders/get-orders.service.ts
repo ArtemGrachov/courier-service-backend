@@ -23,6 +23,7 @@ export class GetOrdersService {
       couriers,
       senders,
       receivers,
+      clients,
       status,
       sortBy,
       sortOrder,
@@ -55,6 +56,26 @@ export class GetOrdersService {
       where.status = {
         in: status,
       };
+    }
+
+    if (clients?.length) {
+      where.AND = [
+        { ...where },
+        {
+          OR: [
+            {
+              sender_id: {
+                in: clients,
+              },
+            },
+            {
+              receiver_id: {
+                in: clients,
+              },
+            },
+          ],
+        },
+      ];
     }
 
     if (sortBy) {
