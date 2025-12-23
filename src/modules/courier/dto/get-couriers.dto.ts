@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Min, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 import { ECourierStatus } from '../constants/courier-status';
@@ -17,6 +17,26 @@ export class GetCouriersDto {
   @IsNumber()
   @Min(1)
   itemsPerPage: number = 10;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  phone?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3)
+  search?: string;
 
   @IsOptional()
   @Transform(toArray)

@@ -56,21 +56,9 @@ export class CourierController {
       transformOptions: { enableImplicitConversion: true },
       forbidNonWhitelisted: true,
       exceptionFactory,
-    })) {
-      page,
-      itemsPerPage,
-      status,
-      sortBy,
-      sortOrder,
-    }: GetCouriersDto,
+    })) query: GetCouriersDto,
   ) {
-    const result = await this.getCouriersService.getCouriers({
-      page,
-      itemsPerPage,
-      status,
-      sortBy,
-      sortOrder,
-    });
+    const result = await this.getCouriersService.getCouriers(query);
 
     return result;
   }
