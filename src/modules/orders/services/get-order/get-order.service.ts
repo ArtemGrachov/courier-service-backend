@@ -33,6 +33,11 @@ export class GetOrderService {
       where: {
         id,
       },
+      include: {
+        sender: true,
+        receiver: true,
+        courier: true,
+      },
     });
 
     return order;
