@@ -107,7 +107,11 @@ export class GetOrdersService {
       include: {
         sender: true,
         receiver: true,
-        courier: true,
+        courier: {
+          include: {
+            position: true,
+          },
+        },
       },
     };
 
