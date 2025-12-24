@@ -12,17 +12,19 @@ export class StatisticService {
   constructor(private prismaService: PrismaService) {}
 
   public async last30DaysOrdersStatistic() {
+    const rangeFrom = dayjs().subtract(30, 'day');
+    const rangeFromDate = rangeFrom.toDate();
     const orders = await this.prismaService.order.findMany({
       where: {
         OR: [
           {
             ordered_at: {
-              gte: dayjs().subtract(30, 'day').toDate(),
+              gte: rangeFromDate,
             },
           },
           {
             completed_at: {
-              gte: dayjs().subtract(30, 'day').toDate(),
+              gte: rangeFromDate,
             },
           }
         ]
@@ -32,14 +34,18 @@ export class StatisticService {
     const statistic = orders.reduce((acc, curr) => {
       const { completed_at: completedAt, ordered_at: orderedAt, status } = curr;
 
-      const orderedDay = dayjs(orderedAt).format('YYYY.MM.DD');
-      const orderedDayData = acc[orderedDay] || (acc[orderedDay] = {});
+      const orderedDay = dayjs(orderedAt);
 
-      orderedDayData.ordered = (orderedDayData.ordered ?? 0) + 1;
+      if (orderedDay.isSame(rangeFrom) || orderedDay.isAfter(rangeFrom)) {
+        const orderedDayKey = orderedDay.format('YYYY.MM.DD');
+        const orderedDayData = acc[orderedDayKey] || (acc[orderedDayKey] = {});
+
+        orderedDayData.ordered = (orderedDayData.ordered ?? 0) + 1;
+      }
 
       if (completedAt) {
-        const completedDay = dayjs(completedAt).format('YYYY.MM.DD');
-        const completedDayData = acc[completedDay] || (acc[completedDay] = {});
+        const completedDayKey = dayjs(completedAt).format('YYYY.MM.DD');
+        const completedDayData = acc[completedDayKey] || (acc[completedDayKey] = {});
 
         switch (status) {
           case EOrderStatus.COMPLETED: {
