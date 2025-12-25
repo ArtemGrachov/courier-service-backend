@@ -101,15 +101,7 @@ export class OrdersController {
     @Param('id', new ParseIntPipe) id: number,
   ) {
     const requestUser = req['user'] as IRequstUser;
-    const order = await this.orderDataService.getOrder({
-      where: {
-        id,
-      },
-      include: {
-        sender: true,
-        receiver: true,
-      },
-    });
+    const order = await this.getOrderService.getOrder(id);
 
     if (!order) {
       throw new NotFoundException();

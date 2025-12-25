@@ -36,8 +36,7 @@ export class ForgotPasswordService {
 
     const expires = dayjs()
       .add(ForgotPasswordService.TOKEN_LIFETIME.VALUE, ForgotPasswordService.TOKEN_LIFETIME.UNITS as ManipulateType)
-      .toDate()
-      .getTime();
+      .toDate();
 
     await this.prismaService.resetPasswordToken.create({
       data: {

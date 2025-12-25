@@ -21,7 +21,7 @@ export class CreateAdminService {
   public async createAdmin() {
     const { email, password } = this.parametersService.parameters;
 
-    const existingAdmin = await this.prismaService.userAdmin.findUnique({
+    const existingAdmin = await this.prismaService.userAdmin.findFirst({
       where: {
         email,
       },

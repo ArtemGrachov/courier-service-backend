@@ -5,7 +5,7 @@ import { ESortOrder } from 'src/constants/sort';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 
 import { UserCourierOrderByWithRelationInput, UserCourierWhereInput } from 'src/generated/prisma/models';
-import { IGetCouriersQuery } from './types';
+import { GetCouriersDto } from '../../dto/get-couriers.dto';
 
 @Injectable()
 export class GetCouriersService {
@@ -14,10 +14,14 @@ export class GetCouriersService {
   public async getCouriers({
     page,
     itemsPerPage,
+    search,
+    email,
+    phone,
+    name,
     status,
     sortBy,
     sortOrder,
-  }: IGetCouriersQuery) {
+  }: GetCouriersDto) {
 
     const skip = (page - 1) * itemsPerPage;
 
@@ -34,16 +38,20 @@ export class GetCouriersService {
       let sortKey: string | null = null;
 
       switch (sortBy) {
+        case ECouriersSortBy.NAME: {
+          sortKey = 'name';
+          break;
+        }
         case ECouriersSortBy.TOTAL_ORDERS: {
-          sortKey = 'totalOrdersCount';
+          sortKey = 'total_orders_count';
           break;
         }
         case ECouriersSortBy.ACTIVE_ORDERS: {
-          sortKey = 'activeOrdersCount';
+          sortKey = 'active_orders_count';
           break;
         }
         case ECouriersSortBy.COMPLETED_ORDERS: {
-          sortKey = 'completedOrdersCount';
+          sortKey = 'completed_orders_count';
           break;
         }
         case ECouriersSortBy.RATING: {
@@ -55,6 +63,55 @@ export class GetCouriersService {
       if (sortKey) {
         orderBy = {
           [sortKey]: sortOrder ?? ESortOrder.DESC,
+        };
+      }
+    }
+
+    if (search) {
+      where.AND = [
+        { ...where },
+        {
+          OR: [
+            {
+              phone: {
+                contains: `%${search}%`,
+                mode: 'insensitive',
+              },
+            },
+            {
+              email: {
+                contains: `%${search}%`,
+                mode: 'insensitive',
+              },
+            },
+            {
+              name: {
+                contains: `%${search}%`,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+      ];
+    } else {
+      if (phone) {
+        where.phone = {
+          contains: `%${phone}%`,
+          mode: 'insensitive',
+        };
+      }
+
+      if (email) {
+        where.email = {
+          contains: `%${email}%`,
+          mode: 'insensitive',
+        };
+      }
+
+      if (name) {
+        where.name = {
+          contains: `%${name}%`,
+          mode: 'insensitive',
         };
       }
     }

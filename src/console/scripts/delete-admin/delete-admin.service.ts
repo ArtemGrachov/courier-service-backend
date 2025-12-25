@@ -27,7 +27,7 @@ export class DeleteAdminService {
       return;
     }
 
-    const user = await this.prismaService.userAdmin.findUnique({ where: { email } });
+    const user = await this.prismaService.userAdmin.findFirst({ where: { email } });
 
     if (!user) {
       console.error(`Admin user with email "${email}" not found`);

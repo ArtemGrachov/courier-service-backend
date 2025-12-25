@@ -37,6 +37,12 @@ export class GetOrdersDto {
   receivers?: number[];
 
   @IsOptional()
+  @IsInt({ each: true })
+  @Transform(toArray)
+  @Type(() => Number)
+  clients?: number[];
+
+  @IsOptional()
   @Transform(toArray)
   @IsEnum(EOrderStatus, { each: true })
   status?: EOrderStatus[];

@@ -114,8 +114,8 @@ model CourierRate {
 }
 
 model ResetPasswordToken {
-  id      Int    @id @default(autoincrement())
+  id      Int      @id @default(autoincrement())
   token   String
-  expires Int
+  expires DateTime
   user_id Int
 }
