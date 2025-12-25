@@ -37,7 +37,7 @@ export class UpdateAdminService {
       return;
     }
 
-    const user = await this.prismaService.userAdmin.findUnique({ where: { email } });
+    const user = await this.prismaService.userAdmin.findFirst({ where: { email } });
 
     if (!user) {
       console.error(`Admin user with email "${email}" not found`);
@@ -52,7 +52,7 @@ export class UpdateAdminService {
 
     if (newPassword) {
       const passwordHash = await this.passwordService.generatePasswordHash(newPassword);
-      data.passwordHash = passwordHash;
+      data.password_hash = passwordHash;
     }
 
     await this.prismaService.userAdmin.update({
