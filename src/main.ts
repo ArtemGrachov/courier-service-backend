@@ -4,6 +4,10 @@ import { GeneralExceptionFilter } from './filters/general-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
 
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new GeneralExceptionFilter(httpAdapterHost));
